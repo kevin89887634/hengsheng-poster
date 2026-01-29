@@ -3,40 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>会议海报生成器 | Hengsheng Team</title>
+    <title>会议海报生成器 Pro | Hengsheng Team</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;600;700;900&family=Playfair+Display:wght@400;600;700;900&family=Montserrat:wght@300;400;500;600;700;800;900&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Noto Sans SC', sans-serif; background: linear-gradient(135deg, #0a0f1a 0%, #1a1a2e 100%); min-height: 100vh; color: #333; }
 
-        /* Login */
-        .login-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .login-box { background: #fff; padding: 50px 40px; border-radius: 20px; box-shadow: 0 25px 80px rgba(0,0,0,0.5); text-align: center; max-width: 420px; width: 100%; }
-        .login-box h1 { font-family: 'Montserrat', sans-serif; font-weight: 800; color: #1a1a2e; font-size: 24px; margin-bottom: 8px; }
-        .login-box .subtitle { font-family: 'Montserrat', sans-serif; color: #d4af37; font-weight: 600; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 35px; }
-        .login-error { color: #e74c3c; margin-bottom: 15px; display: none; font-size: 14px; }
-        .login-box input { width: 100%; padding: 16px 20px; border: 2px solid #e8e8e8; border-radius: 12px; font-size: 16px; margin-bottom: 20px; transition: all 0.3s; }
-        .login-box input:focus { outline: none; border-color: #d4af37; }
-        .login-box button { width: 100%; padding: 16px; background: linear-gradient(135deg, #d4af37, #f4d03f); border: none; border-radius: 12px; color: #1a1a2e; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Montserrat', sans-serif; letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s; }
-        .login-box button:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(212,175,55,0.4); }
+        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(26,26,46,0.95); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        .loading-overlay.show { display: flex; }
+        .loading-spinner { width: 50px; height: 50px; border: 4px solid #333; border-top-color: #d4af37; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { color: #d4af37; margin-top: 20px; font-size: 16px; }
 
-        /* App */
+        .auth-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .auth-box { background: #fff; padding: 50px 40px; border-radius: 20px; box-shadow: 0 25px 80px rgba(0,0,0,0.5); text-align: center; max-width: 420px; width: 100%; }
+        .auth-box h1 { font-family: 'Montserrat', sans-serif; font-weight: 800; color: #1a1a2e; font-size: 24px; margin-bottom: 8px; }
+        .auth-box .subtitle { font-family: 'Montserrat', sans-serif; color: #d4af37; font-weight: 600; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 35px; }
+        .auth-tabs { display: flex; margin-bottom: 25px; border-radius: 12px; overflow: hidden; border: 2px solid #e8e8e8; }
+        .auth-tab { flex: 1; padding: 12px; border: none; background: transparent; color: #888; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .auth-tab.active { background: linear-gradient(135deg, #d4af37, #f4d03f); color: #1a1a2e; }
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+        .auth-error, .auth-success { padding: 12px; border-radius: 10px; margin-bottom: 15px; font-size: 14px; display: none; }
+        .auth-error.show { display: block; background: #fee; color: #c00; border: 1px solid #fcc; }
+        .auth-success.show { display: block; background: #efe; color: #080; border: 1px solid #cfc; }
+        .auth-box input { width: 100%; padding: 16px 20px; border: 2px solid #e8e8e8; border-radius: 12px; font-size: 16px; margin-bottom: 15px; transition: all 0.3s; }
+        .auth-box input:focus { outline: none; border-color: #d4af37; }
+        .auth-box button.auth-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #d4af37, #f4d03f); border: none; border-radius: 12px; color: #1a1a2e; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Montserrat', sans-serif; letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s; margin-bottom: 15px; }
+        .auth-box button.auth-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(212,175,55,0.4); }
+        .auth-box button.auth-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .auth-link { color: #d4af37; text-decoration: none; font-size: 14px; cursor: pointer; }
+
         .app-container { display: none; min-height: 100vh; }
         .app-header { background: linear-gradient(135deg, #d4af37, #f4d03f); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 100; }
         .app-header h1 { font-family: 'Montserrat', sans-serif; font-weight: 800; color: #1a1a2e; font-size: 16px; }
+        .header-user { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #1a1a2e; }
         .header-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
         .header-btn { padding: 8px 16px; border: 2px solid #1a1a2e; background: transparent; color: #1a1a2e; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.2s; }
         .header-btn:hover { background: #1a1a2e; color: #d4af37; }
+        .header-btn.logout-btn { border-color: #c00; color: #c00; }
+        .header-btn.logout-btn:hover { background: #c00; color: #fff; }
 
         .main-content { display: flex; flex-wrap: wrap; padding: 20px; gap: 20px; max-width: 1600px; margin: 0 auto; }
-
-        /* Form */
         .form-section { flex: 1; min-width: 380px; max-width: 520px; background: #fff; border-radius: 20px; padding: 25px; box-shadow: 0 15px 50px rgba(0,0,0,0.3); max-height: calc(100vh - 100px); overflow-y: auto; }
         .form-section::-webkit-scrollbar { width: 6px; }
-        .form-section::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 3px; }
         .form-section::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 3px; }
 
         .tab-container { display: flex; gap: 4px; margin-bottom: 20px; background: #f5f5f5; padding: 4px; border-radius: 12px; }
@@ -47,7 +61,6 @@
 
         .form-section-title { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; color: #1a1a2e; margin: 22px 0 12px 0; padding-bottom: 8px; border-bottom: 2px solid #d4af37; text-transform: uppercase; letter-spacing: 1px; }
         .form-section-title:first-child { margin-top: 0; }
-
         .form-group { margin-bottom: 14px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #444; font-size: 12px; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 11px 14px; border: 2px solid #e8e8e8; border-radius: 10px; font-size: 14px; transition: all 0.3s; font-family: 'Noto Sans SC', sans-serif; }
@@ -57,1580 +70,1293 @@
         .form-row .form-group { flex: 1; }
         .form-hint { font-size: 11px; color: #888; margin-top: 4px; }
 
-        /* Auto translate indicator */
         .auto-translate-label { display: flex; align-items: center; justify-content: space-between; }
         .auto-badge { background: #e3f2fd; color: #1976d2; padding: 2px 8px; border-radius: 10px; font-size: 9px; font-weight: 600; }
+        .api-badge { background: #fff3e0; color: #e65100; }
+
+        .quick-fill-section { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border: 2px solid #4caf50; border-radius: 12px; padding: 15px; margin-bottom: 20px; }
+        .quick-fill-section h4 { font-size: 13px; color: #2e7d32; margin-bottom: 10px; }
+        .quick-fill-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+        .quick-fill-btn { padding: 8px 14px; background: #4caf50; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s; }
+        .quick-fill-btn:hover { background: #388e3c; }
 
         .speaker-select-container { display: flex; gap: 8px; margin-bottom: 12px; }
         .speaker-select-container select { flex: 1; }
         .speaker-select-container button { padding: 11px 14px; background: #1a1a2e; color: #d4af37; border: none; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .speaker-select-container button:hover { background: #2d3561; }
 
-        /* Photo Upload */
+        /* Photo Upload Area */
         .photo-upload-area { width: 100%; height: 160px; border: 3px dashed #d4af37; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s; background: linear-gradient(135deg, #fffbeb, #fff9e6); overflow: hidden; position: relative; }
         .photo-upload-area:hover { background: linear-gradient(135deg, #fff5d6, #fff3cc); }
         .photo-upload-area img { max-width: 100%; max-height: 100%; object-fit: contain; }
         .photo-upload-area .upload-text { text-align: center; color: #b8960c; font-weight: 600; font-size: 13px; }
         .photo-upload-area .upload-text span { display: block; font-size: 36px; margin-bottom: 8px; }
 
-        /* Cutout Tool Link */
-        .cutout-tool { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border: 2px solid #4caf50; border-radius: 12px; padding: 12px; margin-top: 12px; }
-        .cutout-tool h5 { font-size: 12px; color: #2e7d32; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-        .cutout-tool p { font-size: 11px; color: #555; line-height: 1.5; margin-bottom: 8px; }
-        .cutout-tool a { display: inline-block; padding: 8px 16px; background: #4caf50; color: white; text-decoration: none; border-radius: 8px; font-size: 12px; font-weight: 600; }
-        .cutout-tool a:hover { background: #388e3c; }
-        .cutout-tool ol { font-size: 11px; color: #666; margin: 8px 0 0 16px; line-height: 1.6; }
+        /* Enhanced Image Controls */
+        .image-controls { background: #f8f9fa; border-radius: 12px; padding: 15px; margin-top: 12px; }
+        .image-controls h5 { font-size: 12px; color: #333; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .control-item { display: flex; flex-direction: column; gap: 4px; }
+        .control-item.full { grid-column: 1 / -1; }
+        .control-item label { font-size: 11px; color: #666; display: flex; justify-content: space-between; }
+        .control-item input[type="range"] { width: 100%; height: 6px; border-radius: 3px; background: #e0e0e0; -webkit-appearance: none; }
+        .control-item input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #d4af37; cursor: pointer; }
 
-        /* Position Controls */
-        .position-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; padding: 15px; background: #f8f9fa; border-radius: 12px; }
-        .position-control { display: flex; flex-direction: column; gap: 6px; }
-        .position-control.full-width { grid-column: 1 / -1; }
-        .position-control label { font-size: 11px; color: #666; font-weight: 600; }
-        .position-control input[type="range"] { width: 100%; height: 6px; border-radius: 3px; background: #e0e0e0; outline: none; -webkit-appearance: none; }
-        .position-control input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #d4af37; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+        .image-action-btns { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+        .image-action-btn { flex: 1; min-width: 80px; padding: 8px; border: 2px solid #e0e0e0; background: #fff; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .image-action-btn:hover { border-color: #d4af37; background: #fffbeb; }
+        .image-action-btn.active { border-color: #d4af37; background: #d4af37; color: #1a1a2e; }
+        .image-action-btn.removebg { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; }
+        .image-action-btn.removebg:hover { opacity: 0.9; }
 
-        /* Flip Controls */
-        .flip-controls { display: flex; gap: 8px; margin-top: 12px; }
-        .flip-btn { flex: 1; padding: 10px; border: 2px solid #e0e0e0; background: #fff; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s; }
-        .flip-btn:hover { border-color: #d4af37; background: #fffbeb; }
-        .flip-btn.active { border-color: #d4af37; background: #d4af37; color: #1a1a2e; }
+        /* AI Translation Section */
+        .ai-translate-section { background: linear-gradient(135deg, #e3f2fd, #bbdefb); border: 2px solid #2196f3; border-radius: 12px; padding: 12px; margin-top: 10px; }
+        .ai-translate-section h5 { font-size: 12px; color: #1565c0; margin-bottom: 8px; }
+        .ai-translate-btn { width: 100%; padding: 10px; background: #2196f3; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .ai-translate-btn:hover { background: #1976d2; }
+        .ai-translate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        /* Color Scheme Selection */
-        .color-schemes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
-        .color-scheme-btn { width: 50px; height: 50px; border: 3px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
-        .color-scheme-btn:hover { transform: scale(1.05); }
-        .color-scheme-btn.active { border-color: #1a1a2e; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
-        .color-scheme-btn .scheme-preview { width: 100%; height: 100%; display: flex; flex-direction: column; }
-        .color-scheme-btn .scheme-preview > div { flex: 1; }
-        .color-scheme-name { font-size: 9px; color: #666; text-align: center; margin-top: 4px; }
+        /* Batch Export */
+        .batch-export-section { background: linear-gradient(135deg, #fce4ec, #f8bbd9); border: 2px solid #e91e63; border-radius: 12px; padding: 15px; margin-top: 15px; }
+        .batch-export-section h4 { font-size: 13px; color: #c2185b; margin-bottom: 10px; }
+        .batch-options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .batch-option { padding: 8px 12px; background: white; border: 2px solid #e91e63; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; color: #c2185b; transition: all 0.2s; }
+        .batch-option.selected { background: #e91e63; color: white; }
+        .batch-export-btn { width: 100%; padding: 12px; background: #e91e63; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; }
+        .batch-export-btn:hover { background: #c2185b; }
+
+        /* Preview Section */
+        .preview-section { flex: 1; min-width: 400px; display: flex; flex-direction: column; align-items: center; }
+        .preview-container { position: relative; width: 100%; max-width: 450px; }
+        .poster-preview { width: 100%; aspect-ratio: 9/16; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 80px rgba(0,0,0,0.5); position: relative; background: #1a1a2e; }
+
+        .poster-bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
+        .poster-overlay { position: absolute; inset: 0; }
+        .poster-content { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 5%; color: white; }
+        .poster-badge { display: inline-block; padding: 0.8% 3%; border-radius: 20px; font-size: 2.8vmin; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2%; }
+        .poster-titles { margin-bottom: 3%; }
+        .poster-main-title { font-family: 'Noto Serif SC', serif; font-size: 6vmin; font-weight: 900; line-height: 1.2; margin-bottom: 1%; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
+        .poster-main-title-en { font-family: 'Oswald', sans-serif; font-size: 3.5vmin; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; opacity: 0.9; }
+        .poster-subtitle { font-size: 3.2vmin; margin-top: 2%; opacity: 0.95; font-weight: 500; }
+        .poster-subtitle-en { font-family: 'Montserrat', sans-serif; font-size: 2.2vmin; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; margin-top: 1%; }
+
+        .poster-speaker { display: flex; align-items: flex-end; gap: 4%; margin: auto 0; padding: 3% 0; }
+        .speaker-photo-container { width: 35%; position: relative; }
+        .speaker-photo { width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: top; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+        .speaker-info { flex: 1; }
+        .speaker-name-cn { font-family: 'Noto Serif SC', serif; font-size: 5vmin; font-weight: 900; margin-bottom: 1%; }
+        .speaker-name-en { font-family: 'Playfair Display', serif; font-size: 3vmin; font-weight: 600; opacity: 0.9; margin-bottom: 2%; letter-spacing: 2px; }
+        .speaker-title { font-size: 2.2vmin; opacity: 0.85; line-height: 1.5; margin-bottom: 2%; }
+        .speaker-achievements { list-style: none; font-size: 2vmin; opacity: 0.8; }
+        .speaker-achievements li { margin-bottom: 1%; padding-left: 3%; position: relative; }
+        .speaker-achievements li::before { content: '✦'; position: absolute; left: 0; }
+
+        .poster-points { margin: 3% 0; }
+        .poster-point { display: flex; align-items: flex-start; gap: 2%; margin-bottom: 2%; font-size: 2.5vmin; }
+        .point-icon { width: 6%; aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2vmin; flex-shrink: 0; }
+        .point-text { flex: 1; line-height: 1.4; }
+
+        .poster-meeting-info { margin-top: auto; padding: 3%; border-radius: 15px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+        .meeting-row { display: flex; align-items: center; gap: 2%; margin-bottom: 1.5%; font-size: 2.3vmin; }
+        .meeting-row:last-child { margin-bottom: 0; }
+        .meeting-icon { width: 5%; opacity: 0.8; }
+        .meeting-label { opacity: 0.7; width: 20%; }
+        .meeting-value { font-weight: 600; }
+
+        .poster-footer { margin-top: 3%; text-align: center; padding-top: 2%; border-top: 1px solid rgba(255,255,255,0.2); }
+        .poster-logo { font-family: 'Montserrat', sans-serif; font-size: 2.5vmin; font-weight: 800; letter-spacing: 3px; }
+        .poster-tagline { font-size: 1.8vmin; opacity: 0.7; margin-top: 1%; }
+
+        .action-buttons { display: flex; gap: 12px; margin-top: 25px; flex-wrap: wrap; justify-content: center; }
+        .action-btn { padding: 14px 28px; border: none; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 700; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .action-btn.primary { background: linear-gradient(135deg, #d4af37, #f4d03f); color: #1a1a2e; }
+        .action-btn.secondary { background: #1a1a2e; color: #d4af37; }
+        .action-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+
+        .history-section { background: #fff; border-radius: 12px; padding: 15px; margin-top: 20px; max-height: 300px; overflow-y: auto; width: 100%; max-width: 450px; }
+        .history-section h4 { font-size: 13px; color: #1a1a2e; margin-bottom: 12px; }
+        .history-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
+        .history-item:hover { background: #e8e8e8; }
+        .history-thumb { width: 40px; height: 70px; background-size: cover; background-position: center; border-radius: 4px; background-color: #1a1a2e; }
+        .history-info { flex: 1; }
+        .history-title { font-size: 12px; font-weight: 600; color: #333; }
+        .history-date { font-size: 10px; color: #888; }
+        .history-delete { padding: 5px 10px; background: #fee; color: #c00; border: none; border-radius: 5px; cursor: pointer; font-size: 11px; }
+
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-overlay.show { display: flex; }
+        .modal-content { background: #fff; border-radius: 20px; padding: 30px; max-width: 500px; width: 100%; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { font-family: 'Montserrat', sans-serif; font-size: 18px; color: #1a1a2e; }
+        .modal-close { width: 36px; height: 36px; border: none; background: #f0f0f0; border-radius: 50%; cursor: pointer; font-size: 18px; }
+
+        .speaker-library-list { max-height: 400px; overflow-y: auto; }
+        .speaker-library-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+        .speaker-library-item:hover { background: #e8e8e8; }
+        .speaker-library-photo { width: 60px; height: 80px; border-radius: 8px; object-fit: cover; background: #ddd; }
+        .speaker-library-info { flex: 1; }
+        .speaker-library-name { font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+        .speaker-library-title { font-size: 12px; color: #666; }
+        .speaker-library-actions { display: flex; gap: 8px; }
+        .speaker-library-actions button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; }
+        .speaker-library-actions .use-btn { background: #d4af37; color: #1a1a2e; }
+        .speaker-library-actions .delete-btn { background: #fee; color: #c00; }
+
+        /* API Key Modal */
+        .api-key-input { width: 100%; padding: 12px; border: 2px solid #e8e8e8; border-radius: 10px; font-size: 14px; margin-bottom: 15px; }
+        .api-key-hint { font-size: 12px; color: #666; margin-bottom: 15px; line-height: 1.6; }
+        .api-key-hint a { color: #2196f3; }
 
         /* Template Grid */
-        .template-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .template-option { aspect-ratio: 9/16; border: 3px solid transparent; border-radius: 12px; cursor: pointer; overflow: hidden; transition: all 0.3s; position: relative; }
-        .template-option:hover { transform: scale(1.03); }
-        .template-option.selected { border-color: #d4af37; box-shadow: 0 0 20px rgba(212,175,55,0.5); }
-        .template-option .template-preview { width: 100%; height: 100%; }
-        .template-option .template-name { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(0deg, rgba(0,0,0,0.8), transparent); color: white; padding: 15px 6px 6px; font-size: 9px; font-weight: 600; text-align: center; }
+        .template-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
+        .template-btn { aspect-ratio: 9/16; border: 3px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+        .template-btn.active { border-color: #d4af37; transform: scale(1.05); }
+        .template-btn span { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; font-size: 10px; padding: 4px; text-align: center; }
 
-        /* Image Library */
-        .image-library { margin-top: 12px; }
-        .image-library h5 { font-size: 11px; color: #666; margin-bottom: 8px; }
-        .image-library-grid { display: flex; gap: 8px; flex-wrap: wrap; max-height: 120px; overflow-y: auto; padding: 8px; background: #f8f9fa; border-radius: 8px; }
-        .image-library-item { width: 50px; height: 50px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; position: relative; }
-        .image-library-item:hover { border-color: #d4af37; }
-        .image-library-item img { width: 100%; height: 100%; object-fit: cover; }
-        .image-library-item .delete-lib-img { position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; background: rgba(231,76,60,0.9); color: white; border: none; border-radius: 50%; font-size: 10px; cursor: pointer; display: none; line-height: 16px; text-align: center; }
-        .image-library-item:hover .delete-lib-img { display: block; }
-        .save-to-library-btn { margin-top: 8px; padding: 8px 14px; background: #9c27b0; color: white; border: none; border-radius: 8px; font-size: 11px; cursor: pointer; }
-        .save-to-library-btn:hover { background: #7b1fa2; }
+        .color-schemes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+        .color-scheme-btn { width: 50px; height: 50px; border: 3px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+        .color-scheme-btn.active { border-color: #1a1a2e; transform: scale(1.1); }
+        .color-scheme-btn::before, .color-scheme-btn::after { content: ''; position: absolute; width: 50%; height: 100%; top: 0; }
+        .color-scheme-btn::before { left: 0; }
+        .color-scheme-btn::after { right: 0; }
+        .color-scheme-btn[data-scheme="1"]::before { background: #1a1a2e; }
+        .color-scheme-btn[data-scheme="1"]::after { background: #d4af37; }
+        .color-scheme-btn[data-scheme="2"]::before { background: #0d2137; }
+        .color-scheme-btn[data-scheme="2"]::after { background: #c9a227; }
+        .color-scheme-btn[data-scheme="3"]::before { background: #1a0a2e; }
+        .color-scheme-btn[data-scheme="3"]::after { background: #9b59b6; }
+        .color-scheme-btn[data-scheme="4"]::before { background: #0a1a2e; }
+        .color-scheme-btn[data-scheme="4"]::after { background: #3498db; }
+        .color-scheme-btn[data-scheme="5"]::before { background: #1a2e1a; }
+        .color-scheme-btn[data-scheme="5"]::after { background: #27ae60; }
 
-        /* Dynamic Items */
-        .dynamic-item { display: flex; gap: 8px; margin-bottom: 8px; }
-        .dynamic-item input, .dynamic-item textarea { flex: 1; }
-        .dynamic-item button { padding: 10px 14px; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; }
-        .dynamic-item button:hover { opacity: 0.9; }
-        .add-btn { padding: 10px 18px; background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; margin-top: 6px; }
-        .add-btn:hover { opacity: 0.9; }
+        .custom-bg-upload { margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 12px; border: 2px dashed #ccc; text-align: center; cursor: pointer; }
+        .custom-bg-upload:hover { border-color: #d4af37; background: #fffbeb; }
+        .custom-bg-preview { margin-top: 10px; max-height: 100px; overflow: hidden; border-radius: 8px; }
+        .custom-bg-preview img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Save Section */
-        .save-section { background: #f8f9fa; border-radius: 12px; padding: 15px; margin-top: 18px; border: 1px solid #e0e0e0; }
-        .save-section h4 { font-size: 12px; margin-bottom: 10px; color: #1a1a2e; font-weight: 700; }
+        .dynamic-items { margin-top: 10px; }
+        .dynamic-item { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .dynamic-item input { flex: 1; }
+        .dynamic-item button { padding: 8px 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .dynamic-item .remove-btn { background: #fee; color: #c00; }
+        .add-item-btn { padding: 10px 16px; background: #e3f2fd; color: #1976d2; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 8px; }
 
-        /* Preview */
-        .preview-section { flex: 1.2; min-width: 450px; display: flex; flex-direction: column; gap: 20px; }
-        .preview-card { background: #fff; border-radius: 20px; padding: 25px; box-shadow: 0 15px 50px rgba(0,0,0,0.3); }
-        .preview-card h3 { font-family: 'Montserrat', sans-serif; font-weight: 700; margin-bottom: 15px; color: #1a1a2e; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
-        .poster-preview-container { display: flex; justify-content: center; overflow: auto; }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 16px 32px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 2000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        .toast.show { opacity: 1; }
+        .toast.success { background: #27ae60; }
+        .toast.error { background: #c0392b; }
 
-        /* ================== POSTER ================== */
-        .poster { width: 420px; height: 747px; position: relative; overflow: hidden; font-family: 'Noto Sans SC', sans-serif; }
-        .poster-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; }
-
-        /* Templates */
-        .poster.template-1 .poster-bg { background: linear-gradient(170deg, #080c14 0%, #0f172a 40%, #1a2744 70%, #0a1020 100%); }
-        .poster.template-2 .poster-bg { background: linear-gradient(170deg, #061220 0%, #0f2744 40%, #1e4068 70%, #0a1830 100%); }
-        .poster.template-3 .poster-bg { background: linear-gradient(170deg, #2a0505 0%, #5c1010 40%, #8b1a1a 70%, #3a0808 100%); }
-        .poster.template-4 .poster-bg { background: linear-gradient(170deg, #051510 0%, #0d2a22 40%, #1a4035 70%, #081a14 100%); }
-        .poster.template-5 .poster-bg { background: linear-gradient(170deg, #0d0515 0%, #1a0d30 40%, #2d1850 70%, #120820 100%); }
-        .poster.template-6 .poster-bg { background: linear-gradient(180deg, #ffffff 0%, #fafafa 50%, #f5f5f5 100%); }
-        .poster.template-custom .poster-bg { background-size: cover; background-position: center; }
-
-        /* BG Decorations */
-        .bg-decor-layer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 1; }
-        .poster.template-1 .bg-accent { position: absolute; top: 0; right: 0; width: 180px; height: 280px; background: linear-gradient(200deg, rgba(212,175,55,0.35) 0%, rgba(244,208,63,0.1) 40%, transparent 70%); }
-        .poster.template-1 .bg-accent-2 { position: absolute; bottom: 0; left: 0; width: 120px; height: 150px; background: radial-gradient(ellipse at bottom left, rgba(212,175,55,0.12) 0%, transparent 60%); }
-        .poster.template-2 .bg-accent { position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #1e5080, #3498db, #1e5080); }
-        .poster.template-2 .bg-accent-2 { position: absolute; top: 20px; right: 20px; width: 80px; height: 80px; border: 2px solid rgba(52,152,219,0.25); border-radius: 50%; }
-        .poster.template-3 .bg-accent { position: absolute; top: 0; right: 0; width: 160px; height: 220px; background: linear-gradient(200deg, rgba(255,215,0,0.28) 0%, rgba(255,200,0,0.08) 40%, transparent 70%); }
-        .poster.template-3 .bg-accent-2 { position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(0deg, rgba(255,215,0,0.08) 0%, transparent 100%); }
-        .poster.template-4 .bg-accent { position: absolute; top: 0; right: 0; width: 140px; height: 180px; background: radial-gradient(ellipse at top right, rgba(46,204,113,0.18) 0%, transparent 60%); }
-        .poster.template-4 .bg-accent-2 { position: absolute; bottom: 40px; left: 0; width: 100px; height: 120px; background: radial-gradient(ellipse at bottom left, rgba(212,175,55,0.12) 0%, transparent 60%); }
-        .poster.template-5 .bg-accent { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; height: 280px; background: radial-gradient(circle, rgba(147,112,219,0.08) 0%, transparent 60%); }
-        .poster.template-6 .bg-accent { position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #d4af37, #f4d03f, #d4af37); }
-        .poster.template-6 .bg-accent-2 { position: absolute; bottom: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #d4af37, #f4d03f, #d4af37); }
-
-        /* Content Layout */
-        .poster-content { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; }
-
-        /* Top Section */
-        .poster-top { padding: 20px 22px 12px; text-align: center; position: relative; z-index: 30; }
-        .poster-badge { display: inline-block; padding: 5px 16px; border-radius: 20px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
-        .poster-main-title { font-family: 'Noto Serif SC', 'Playfair Display', serif; font-size: 34px; font-weight: 900; line-height: 1.25; margin-bottom: 4px; letter-spacing: 2px; }
-        .poster-main-title-en { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; opacity: 0.7; }
-        .poster-subtitle { font-family: 'Noto Sans SC', sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 1px; }
-        .poster-subtitle-en { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 400; letter-spacing: 1px; margin-top: 2px; opacity: 0.6; }
-
-        /* Middle Section */
-        .poster-middle { flex: 1; display: flex; padding: 0 22px; gap: 15px; position: relative; }
-
-        /* Photo Container with GLOW EFFECT that follows photo */
-        .photo-container { width: 45%; position: relative; display: flex; align-items: center; justify-content: center; z-index: 5; }
-        .photo-wrapper { position: relative; width: 100%; height: 100%; display: flex; align-items: flex-end; justify-content: center; }
-
-        /* Dynamic glow effect that follows the photo */
-        .photo-glow { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 3; opacity: 0.6; filter: blur(25px); transition: all 0.3s; }
-
-        .speaker-photo { position: relative; z-index: 5; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 10px 25px rgba(0,0,0,0.4)); transition: all 0.3s; }
-
-        /* Gradient Decoration Lines at Bottom */
-        .gradient-lines { position: absolute; left: 0; right: 0; height: 100px; z-index: 25; pointer-events: none; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; padding: 0 0 10px 0; transition: bottom 0.3s; }
-        .gradient-line { height: 6px; border-radius: 3px; opacity: 0.9; }
-        .gradient-line:nth-child(1) { width: 90%; margin-left: 5%; }
-        .gradient-line:nth-child(2) { width: 75%; margin-left: 12%; }
-        .gradient-line:nth-child(3) { width: 60%; margin-left: 20%; }
-
-        /* Gradient Line Colors per Scheme */
-        .scheme-1 .gradient-line:nth-child(1) { background: linear-gradient(90deg, transparent, #ffd700, #daa520, transparent); }
-        .scheme-1 .gradient-line:nth-child(2) { background: linear-gradient(90deg, transparent, #daa520, #ffd700, transparent); opacity: 0.7; }
-        .scheme-1 .gradient-line:nth-child(3) { background: linear-gradient(90deg, transparent, #ffd700, transparent); opacity: 0.5; }
-
-        .scheme-2 .gradient-line:nth-child(1) { background: linear-gradient(90deg, transparent, #87ceeb, #1e90ff, transparent); }
-        .scheme-2 .gradient-line:nth-child(2) { background: linear-gradient(90deg, transparent, #1e90ff, #87ceeb, transparent); opacity: 0.7; }
-        .scheme-2 .gradient-line:nth-child(3) { background: linear-gradient(90deg, transparent, #87ceeb, transparent); opacity: 0.5; }
-
-        .scheme-3 .gradient-line:nth-child(1) { background: linear-gradient(90deg, transparent, #ffb6c1, #ff1493, transparent); }
-        .scheme-3 .gradient-line:nth-child(2) { background: linear-gradient(90deg, transparent, #ff1493, #ffb6c1, transparent); opacity: 0.7; }
-        .scheme-3 .gradient-line:nth-child(3) { background: linear-gradient(90deg, transparent, #ffb6c1, transparent); opacity: 0.5; }
-
-        .scheme-4 .gradient-line:nth-child(1) { background: linear-gradient(90deg, transparent, #98fb98, #32cd32, transparent); }
-        .scheme-4 .gradient-line:nth-child(2) { background: linear-gradient(90deg, transparent, #32cd32, #98fb98, transparent); opacity: 0.7; }
-        .scheme-4 .gradient-line:nth-child(3) { background: linear-gradient(90deg, transparent, #98fb98, transparent); opacity: 0.5; }
-
-        .scheme-5 .gradient-line:nth-child(1) { background: linear-gradient(90deg, transparent, #fff, #e0e0e0, transparent); }
-        .scheme-5 .gradient-line:nth-child(2) { background: linear-gradient(90deg, transparent, #e0e0e0, #fff, transparent); opacity: 0.7; }
-        .scheme-5 .gradient-line:nth-child(3) { background: linear-gradient(90deg, transparent, #fff, transparent); opacity: 0.5; }
-
-        .poster.template-6 .gradient-line:nth-child(1) { background: linear-gradient(90deg, transparent, #d4af37, #f4d03f, transparent); }
-        .poster.template-6 .gradient-line:nth-child(2) { background: linear-gradient(90deg, transparent, #f4d03f, #d4af37, transparent); opacity: 0.7; }
-        .poster.template-6 .gradient-line:nth-child(3) { background: linear-gradient(90deg, transparent, #d4af37, transparent); opacity: 0.5; }
-
-        /* Info Container */
-        .info-container { width: 55%; display: flex; flex-direction: column; justify-content: center; padding: 8px 0; position: relative; z-index: 20; }
-        .speaker-name { font-family: 'Montserrat', 'Noto Sans SC', sans-serif; font-size: 24px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 2px; line-height: 1.2; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
-        .speaker-name-en { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; opacity: 0.6; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
-        .speaker-title { font-family: 'Noto Sans SC', sans-serif; font-size: 12px; font-weight: 400; line-height: 1.5; margin-bottom: 12px; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
-
-        /* Content Points */
-        .content-points { display: flex; flex-direction: column; gap: 10px; }
-        .content-point { display: flex; gap: 10px; align-items: flex-start; }
-        .point-marker { width: 22px; height: 22px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; flex-shrink: 0; margin-top: 1px; }
-        .point-text { flex: 1; }
-        .point-title { font-family: 'Oswald', 'Noto Sans SC', sans-serif; font-size: 14px; font-weight: 600; margin-bottom: 1px; letter-spacing: 0.5px; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
-        .point-title-en { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 400; letter-spacing: 0.5px; opacity: 0.5; margin-bottom: 2px; }
-        .point-desc { font-family: 'Noto Sans SC', sans-serif; font-size: 11px; font-weight: 400; line-height: 1.4; text-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-
-        /* Bottom Section */
-        .poster-bottom { padding: 10px 22px 16px; text-align: center; position: relative; z-index: 30; }
-        .footer-line { width: 50px; height: 2px; margin: 0 auto 8px; border-radius: 1px; }
-        .meeting-date { font-family: 'Montserrat', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: 1px; margin-bottom: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.4); }
-        .meeting-time-display { font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
-        .timezone-info { font-family: 'Noto Sans SC', sans-serif; font-size: 11px; font-weight: 500; padding: 6px 14px; border-radius: 12px; display: inline-block; letter-spacing: 0.3px; }
-
-        /* Color Schemes */
-        .scheme-1 .poster-badge { background: rgba(212,175,55,0.25); color: #ffd700; border: 1px solid rgba(255,215,0,0.5); }
-        .scheme-1 .poster-main-title { background: linear-gradient(135deg, #ffd700 0%, #ffec8b 30%, #daa520 60%, #ffd700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .scheme-1 .poster-main-title-en, .scheme-1 .poster-subtitle { color: #fff; }
-        .scheme-1 .poster-subtitle-en { color: rgba(255,255,255,0.7); }
-        .scheme-1 .speaker-name { color: #fff; }
-        .scheme-1 .speaker-name-en { color: rgba(255,255,255,0.7); }
-        .scheme-1 .speaker-title { color: rgba(255,255,255,0.85); }
-        .scheme-1 .point-marker { background: linear-gradient(135deg, #daa520, #ffd700); color: #1a1a2e; }
-        .scheme-1 .point-title { color: #ffd700; }
-        .scheme-1 .point-title-en { color: rgba(255,255,255,0.6); }
-        .scheme-1 .point-desc { color: rgba(255,255,255,0.8); }
-        .scheme-1 .footer-line { background: linear-gradient(90deg, transparent, #ffd700, transparent); }
-        .scheme-1 .meeting-date { color: #ffd700; }
-        .scheme-1 .meeting-time-display { color: rgba(255,255,255,0.7); }
-        .scheme-1 .timezone-info { background: rgba(212,175,55,0.2); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,215,0,0.4); }
-        .scheme-1 .photo-glow { background: radial-gradient(ellipse, rgba(212,175,55,0.4) 0%, transparent 70%); }
-
-        .scheme-2 .poster-badge { background: rgba(30,144,255,0.25); color: #87ceeb; border: 1px solid rgba(135,206,250,0.5); }
-        .scheme-2 .poster-main-title { background: linear-gradient(135deg, #87ceeb 0%, #00bfff 30%, #1e90ff 60%, #87ceeb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .scheme-2 .poster-main-title-en, .scheme-2 .poster-subtitle { color: #fff; }
-        .scheme-2 .poster-subtitle-en { color: rgba(255,255,255,0.7); }
-        .scheme-2 .speaker-name { color: #fff; }
-        .scheme-2 .speaker-name-en { color: rgba(255,255,255,0.7); }
-        .scheme-2 .speaker-title { color: rgba(255,255,255,0.85); }
-        .scheme-2 .point-marker { background: linear-gradient(135deg, #1e90ff, #00bfff); color: #fff; }
-        .scheme-2 .point-title { color: #87ceeb; }
-        .scheme-2 .point-title-en { color: rgba(255,255,255,0.6); }
-        .scheme-2 .point-desc { color: rgba(255,255,255,0.8); }
-        .scheme-2 .footer-line { background: linear-gradient(90deg, transparent, #00bfff, transparent); }
-        .scheme-2 .meeting-date { color: #87ceeb; }
-        .scheme-2 .meeting-time-display { color: rgba(255,255,255,0.7); }
-        .scheme-2 .timezone-info { background: rgba(30,144,255,0.2); color: rgba(255,255,255,0.85); border: 1px solid rgba(135,206,250,0.4); }
-        .scheme-2 .photo-glow { background: radial-gradient(ellipse, rgba(30,144,255,0.4) 0%, transparent 70%); }
-
-        .scheme-3 .poster-badge { background: rgba(255,105,180,0.25); color: #ffb6c1; border: 1px solid rgba(255,182,193,0.5); }
-        .scheme-3 .poster-main-title { background: linear-gradient(135deg, #ffb6c1 0%, #ff69b4 30%, #ff1493 60%, #ffb6c1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .scheme-3 .poster-main-title-en, .scheme-3 .poster-subtitle { color: #fff; }
-        .scheme-3 .poster-subtitle-en { color: rgba(255,255,255,0.7); }
-        .scheme-3 .speaker-name { color: #fff; }
-        .scheme-3 .speaker-name-en { color: rgba(255,255,255,0.7); }
-        .scheme-3 .speaker-title { color: rgba(255,255,255,0.85); }
-        .scheme-3 .point-marker { background: linear-gradient(135deg, #ff1493, #ff69b4); color: #fff; }
-        .scheme-3 .point-title { color: #ffb6c1; }
-        .scheme-3 .point-title-en { color: rgba(255,255,255,0.6); }
-        .scheme-3 .point-desc { color: rgba(255,255,255,0.8); }
-        .scheme-3 .footer-line { background: linear-gradient(90deg, transparent, #ff69b4, transparent); }
-        .scheme-3 .meeting-date { color: #ffb6c1; }
-        .scheme-3 .meeting-time-display { color: rgba(255,255,255,0.7); }
-        .scheme-3 .timezone-info { background: rgba(255,105,180,0.2); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,182,193,0.4); }
-        .scheme-3 .photo-glow { background: radial-gradient(ellipse, rgba(255,105,180,0.4) 0%, transparent 70%); }
-
-        .scheme-4 .poster-badge { background: rgba(50,205,50,0.25); color: #98fb98; border: 1px solid rgba(152,251,152,0.5); }
-        .scheme-4 .poster-main-title { background: linear-gradient(135deg, #98fb98 0%, #00fa9a 30%, #32cd32 60%, #98fb98 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .scheme-4 .poster-main-title-en, .scheme-4 .poster-subtitle { color: #fff; }
-        .scheme-4 .poster-subtitle-en { color: rgba(255,255,255,0.7); }
-        .scheme-4 .speaker-name { color: #fff; }
-        .scheme-4 .speaker-name-en { color: rgba(255,255,255,0.7); }
-        .scheme-4 .speaker-title { color: rgba(255,255,255,0.85); }
-        .scheme-4 .point-marker { background: linear-gradient(135deg, #32cd32, #00fa9a); color: #1a1a2e; }
-        .scheme-4 .point-title { color: #98fb98; }
-        .scheme-4 .point-title-en { color: rgba(255,255,255,0.6); }
-        .scheme-4 .point-desc { color: rgba(255,255,255,0.8); }
-        .scheme-4 .footer-line { background: linear-gradient(90deg, transparent, #00fa9a, transparent); }
-        .scheme-4 .meeting-date { color: #98fb98; }
-        .scheme-4 .meeting-time-display { color: rgba(255,255,255,0.7); }
-        .scheme-4 .timezone-info { background: rgba(50,205,50,0.2); color: rgba(255,255,255,0.85); border: 1px solid rgba(152,251,152,0.4); }
-        .scheme-4 .photo-glow { background: radial-gradient(ellipse, rgba(50,205,50,0.4) 0%, transparent 70%); }
-
-        .scheme-5 .poster-badge { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.5); }
-        .scheme-5 .poster-main-title { background: linear-gradient(135deg, #fff 0%, #e8e8e8 30%, #d0d0d0 60%, #fff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .scheme-5 .poster-main-title-en, .scheme-5 .poster-subtitle { color: #fff; }
-        .scheme-5 .poster-subtitle-en { color: rgba(255,255,255,0.7); }
-        .scheme-5 .speaker-name { color: #fff; }
-        .scheme-5 .speaker-name-en { color: rgba(255,255,255,0.7); }
-        .scheme-5 .speaker-title { color: rgba(255,255,255,0.85); }
-        .scheme-5 .point-marker { background: linear-gradient(135deg, #e0e0e0, #fff); color: #1a1a2e; }
-        .scheme-5 .point-title { color: #fff; }
-        .scheme-5 .point-title-en { color: rgba(255,255,255,0.6); }
-        .scheme-5 .point-desc { color: rgba(255,255,255,0.8); }
-        .scheme-5 .footer-line { background: linear-gradient(90deg, transparent, #fff, transparent); }
-        .scheme-5 .meeting-date { color: #fff; }
-        .scheme-5 .meeting-time-display { color: rgba(255,255,255,0.7); }
-        .scheme-5 .timezone-info { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.4); }
-        .scheme-5 .photo-glow { background: radial-gradient(ellipse, rgba(255,255,255,0.3) 0%, transparent 70%); }
-
-        /* White Template Override */
-        .poster.template-6 .poster-badge { background: rgba(212,175,55,0.15); color: #b8960c; border: 1px solid rgba(212,175,55,0.4); }
-        .poster.template-6 .poster-main-title { color: #1a1a2e; -webkit-text-fill-color: #1a1a2e; }
-        .poster.template-6 .poster-main-title-en, .poster.template-6 .poster-subtitle, .poster.template-6 .poster-subtitle-en { color: #666; }
-        .poster.template-6 .speaker-name { color: #1a1a2e; text-shadow: none; }
-        .poster.template-6 .speaker-name-en, .poster.template-6 .speaker-title { color: #666; text-shadow: none; }
-        .poster.template-6 .point-marker { background: linear-gradient(135deg, #d4af37, #f4d03f); color: #1a1a2e; }
-        .poster.template-6 .point-title { color: #1a1a2e; text-shadow: none; }
-        .poster.template-6 .point-title-en, .poster.template-6 .point-desc { color: #666; text-shadow: none; }
-        .poster.template-6 .footer-line { background: linear-gradient(90deg, transparent, #d4af37, transparent); }
-        .poster.template-6 .meeting-date { color: #1a1a2e; text-shadow: none; }
-        .poster.template-6 .meeting-time-display { color: #888; }
-        .poster.template-6 .timezone-info { background: rgba(212,175,55,0.1); color: #666; border: 1px solid rgba(212,175,55,0.3); }
-        .poster.template-6 .photo-glow { background: radial-gradient(ellipse, rgba(212,175,55,0.2) 0%, transparent 70%); }
-
-        /* Text Notification */
-        .text-notification { background: #f8f9fa; border-radius: 12px; padding: 14px; font-size: 13px; line-height: 1.8; white-space: pre-wrap; max-height: 180px; overflow-y: auto; border: 1px solid #e0e0e0; }
-
-        /* Action Buttons */
-        .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
-        .action-btn { flex: 1; min-width: 100px; padding: 12px 16px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .action-btn.primary { background: linear-gradient(135deg, #d4af37, #f4d03f); color: #1a1a2e; }
-        .action-btn.secondary { background: linear-gradient(135deg, #1a1a2e, #2d3561); color: white; }
-        .action-btn.tertiary { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; }
-        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
-
-        /* Modals */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
-        .modal { background: white; border-radius: 20px; padding: 28px; max-width: 550px; width: 100%; max-height: 80vh; overflow-y: auto; position: relative; }
-        .modal h2 { font-family: 'Montserrat', sans-serif; font-weight: 800; margin-bottom: 18px; color: #1a1a2e; font-size: 17px; }
-        .modal-close { position: absolute; top: 18px; right: 18px; background: #f0f0f0; border: none; width: 34px; height: 34px; border-radius: 50%; font-size: 18px; cursor: pointer; color: #666; display: flex; align-items: center; justify-content: center; }
-        .modal-close:hover { background: #e0e0e0; }
-        .speaker-library-item { display: flex; gap: 14px; padding: 14px; border: 2px solid #e8e8e8; border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; align-items: center; }
-        .speaker-library-item:hover { border-color: #d4af37; background: #fffbeb; }
-        .speaker-library-item img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
-        .speaker-library-item .info { flex: 1; }
-        .speaker-library-item .info h4 { font-family: 'Montserrat', sans-serif; font-weight: 700; margin-bottom: 3px; color: #1a1a2e; font-size: 13px; }
-        .speaker-library-item .info p { font-size: 11px; color: #666; line-height: 1.4; }
-        .speaker-library-item .item-actions { display: flex; gap: 5px; }
-        .speaker-library-item .item-actions button { padding: 6px 10px; border: none; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; }
-        .speaker-library-item .item-actions .load-btn { background: #27ae60; color: white; }
-        .speaker-library-item .item-actions .delete-btn { background: #e74c3c; color: white; }
-
-        /* Toast */
-        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: linear-gradient(135deg, #1a1a2e, #2d3561); color: white; padding: 14px 28px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); z-index: 2000; transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); font-weight: 600; font-size: 14px; }
-        .toast.show { transform: translateX(-50%) translateY(0); }
-
-        @media (max-width: 950px) {
-            .main-content { flex-direction: column; }
-            .form-section, .preview-section { max-width: 100%; min-width: auto; }
-            .poster { width: 100%; max-width: 420px; height: auto; aspect-ratio: 9/16; }
-            .template-grid { grid-template-columns: repeat(2, 1fr); }
+        @media (max-width: 900px) {
+            .main-content { flex-direction: column; align-items: center; }
+            .form-section, .preview-section { max-width: 100%; min-width: auto; width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="login-screen" id="loginScreen">
-        <div class="login-box">
-            <h1>会议海报生成器</h1>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">加载中...</div>
+    </div>
+
+    <!-- Auth Screen -->
+    <div class="auth-screen" id="authScreen">
+        <div class="auth-box">
+            <h1>会议海报生成器 Pro</h1>
             <p class="subtitle">Hengsheng Team</p>
-            <p class="login-error" id="loginError">密码错误，请重试</p>
-            <input type="password" id="passwordInput" placeholder="请输入访问密码" onkeypress="if(event.key==='Enter')login()">
-            <button onclick="login()">进入系统</button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">登录</button>
+                <button class="auth-tab" onclick="switchAuthTab('register')">注册</button>
+            </div>
+            <div class="auth-error" id="authError"></div>
+            <div class="auth-success" id="authSuccess"></div>
+            <div class="auth-form active" id="loginForm">
+                <input type="email" id="loginEmail" placeholder="邮箱地址">
+                <input type="password" id="loginPassword" placeholder="密码" onkeypress="if(event.key==='Enter')handleLogin()">
+                <button class="auth-btn" id="loginBtn" onclick="handleLogin()">登录</button>
+                <a class="auth-link" onclick="showForgotPassword()">忘记密码？</a>
+            </div>
+            <div class="auth-form" id="registerForm">
+                <input type="email" id="registerEmail" placeholder="邮箱地址">
+                <input type="password" id="registerPassword" placeholder="密码（至少6位）">
+                <input type="password" id="registerConfirmPassword" placeholder="确认密码">
+                <button class="auth-btn" id="registerBtn" onclick="handleRegister()">注册</button>
+            </div>
+            <div class="auth-form" id="forgotForm">
+                <input type="email" id="forgotEmail" placeholder="邮箱地址">
+                <button class="auth-btn" onclick="handleForgotPassword()">发送重置邮件</button>
+                <a class="auth-link" onclick="switchAuthTab('login')">返回登录</a>
+            </div>
         </div>
     </div>
 
+    <!-- Main App -->
     <div class="app-container" id="appContainer">
         <header class="app-header">
-            <h1>海报生成器 · Hengsheng Team</h1>
+            <h1>🎨 会议海报生成器 Pro</h1>
+            <div class="header-user"><span id="userEmail"></span></div>
             <div class="header-buttons">
-                <button class="header-btn" onclick="openSpeakerLibrary()">📚 讲师库</button>
-                <button class="header-btn" onclick="openImageLibrary()">🖼️ 图片库</button>
-                <button class="header-btn" onclick="openSavedTemplates()">💾 已保存</button>
-                <button class="header-btn" onclick="logout()">退出</button>
+                <button class="header-btn" onclick="openSpeakerLibrary()">👥 讲师库</button>
+                <button class="header-btn" onclick="openTemplateLibrary()">📑 模板库</button>
+                <button class="header-btn" onclick="saveAsTemplate()">💾 保存</button>
+                <button class="header-btn" onclick="openApiSettings()">⚙️ API</button>
+                <button class="header-btn logout-btn" onclick="handleLogout()">退出</button>
             </div>
         </header>
 
-        <main class="main-content">
+        <div class="main-content">
             <div class="form-section">
+                <!-- Quick Fill -->
+                <div class="quick-fill-section">
+                    <h4>⚡ 一键填充</h4>
+                    <div class="quick-fill-btns">
+                        <button class="quick-fill-btn" onclick="quickFill('lisa')">Lisa Yao</button>
+                        <button class="quick-fill-btn" onclick="quickFill('shirley')">Shirley Wang</button>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
                 <div class="tab-container">
-                    <button class="tab-btn active" onclick="switchTab('speaker')">👤 演讲者</button>
-                    <button class="tab-btn" onclick="switchTab('content')">📝 内容</button>
-                    <button class="tab-btn" onclick="switchTab('meeting')">📅 会议</button>
-                    <button class="tab-btn" onclick="switchTab('design')">🎨 设计</button>
+                    <button class="tab-btn active" onclick="switchTab('speaker')">讲师</button>
+                    <button class="tab-btn" onclick="switchTab('content')">内容</button>
+                    <button class="tab-btn" onclick="switchTab('meeting')">会议</button>
+                    <button class="tab-btn" onclick="switchTab('design')">设计</button>
+                    <button class="tab-btn" onclick="switchTab('export')">导出</button>
                 </div>
 
                 <!-- Speaker Tab -->
                 <div class="tab-content active" id="tab-speaker">
                     <div class="speaker-select-container">
-                        <select id="speakerSelect" onchange="loadSpeakerFromSelect()">
-                            <option value="">-- 从讲师库选择 --</option>
+                        <select id="speakerSelect" onchange="loadSpeaker()">
+                            <option value="">-- 选择讲师 --</option>
+                            <option value="lisa">Lisa Yao</option>
+                            <option value="shirley">Shirley Wang</option>
                         </select>
-                        <button onclick="clearSpeaker()">清空</button>
+                        <button onclick="saveSpeaker()">保存</button>
                     </div>
 
+                    <div class="form-section-title">讲师信息</div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>中文姓名</label>
-                            <input type="text" id="speakerName" placeholder="范凯文" oninput="onChineseNameInput()">
+                            <label class="auto-translate-label">中文姓名 <span class="auto-badge api-badge">API翻译</span></label>
+                            <input type="text" id="speakerName" placeholder="如：范文明" oninput="onChineseNameInput()">
                         </div>
                         <div class="form-group">
-                            <label class="auto-translate-label">英文姓名 <span class="auto-badge">自动翻译</span></label>
-                            <input type="text" id="speakerNameEn" placeholder="Kevin Fan" oninput="updatePreview()">
+                            <label>英文姓名</label>
+                            <input type="text" id="speakerNameEn" placeholder="自动翻译" oninput="updatePreview()">
                         </div>
                     </div>
-
                     <div class="form-group">
-                        <label>头衔/简介</label>
-                        <textarea id="speakerTitle" placeholder="多年行业实战导师 | 团队领航人" oninput="updatePreview()"></textarea>
+                        <label>讲师头衔</label>
+                        <textarea id="speakerTitle" placeholder="资深行业导师 | 金融公司CEO" oninput="updatePreview()"></textarea>
                     </div>
 
-                    <h4 class="form-section-title">📷 照片</h4>
-                    <div class="photo-upload-area" onclick="document.getElementById('photoUpload').click()">
-                        <img id="photoPreview" src="" style="display:none;">
-                        <div class="upload-text" id="uploadText"><span>📸</span>点击上传照片</div>
-                        <input type="file" id="photoUpload" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
-                    </div>
-
-                    <div class="cutout-tool">
-                        <h5>✂️ 照片抠图工具</h5>
-                        <p>建议使用透明背景PNG照片效果更佳。推荐使用免费在线抠图工具：</p>
-                        <a href="https://www.remove.bg/zh" target="_blank">🔗 打开 Remove.bg</a>
-                        <ol>
-                            <li>点击上方链接打开 remove.bg 网站</li>
-                            <li>上传您的照片，AI自动抠图</li>
-                            <li>下载PNG透明背景照片</li>
-                            <li>回到本页面上传抠好的照片</li>
-                        </ol>
-                    </div>
-
-                    <div class="image-library" id="photoLibrarySection">
-                        <h5>📁 已保存的讲师照片</h5>
-                        <div class="image-library-grid" id="photoLibraryGrid"></div>
-                        <button class="save-to-library-btn" onclick="saveCurrentPhotoToLibrary()">💾 保存当前照片到图片库</button>
-                    </div>
-
-                    <div class="position-controls">
-                        <div class="position-control">
-                            <label>水平位置: <span id="posXVal">110</span>%</label>
-                            <input type="range" id="photoPosX" min="-50" max="150" value="110" oninput="updatePhotoPos()">
-                        </div>
-                        <div class="position-control">
-                            <label>垂直位置: <span id="posYVal">-32</span>%</label>
-                            <input type="range" id="photoPosY" min="-50" max="150" value="-32" oninput="updatePhotoPos()">
-                        </div>
-                        <div class="position-control">
-                            <label>缩放: <span id="sizeVal">100</span>%</label>
-                            <input type="range" id="photoSize" min="30" max="200" value="100" oninput="updatePhotoPos()">
-                        </div>
-                        <div class="position-control">
-                            <label>旋转: <span id="rotateVal">0</span>°</label>
-                            <input type="range" id="photoRotate" min="-45" max="45" value="0" oninput="updatePhotoPos()">
-                        </div>
-                        <div class="position-control full-width">
-                            <label>渐变线位置: <span id="linesYVal">0</span>px</label>
-                            <input type="range" id="linesPosY" min="-100" max="150" value="0" oninput="updateLinesPos()">
+                    <div class="form-section-title">讲师成就</div>
+                    <div class="dynamic-items" id="achievementsList">
+                        <div class="dynamic-item">
+                            <input type="text" placeholder="成就1" oninput="updatePreview()">
+                            <button class="remove-btn" onclick="removeItem(this)">✕</button>
                         </div>
                     </div>
+                    <button class="add-item-btn" onclick="addAchievement()">+ 添加成就</button>
 
-                    <div class="flip-controls">
-                        <button class="flip-btn" id="flipHBtn" onclick="toggleFlipH()">↔️ 水平镜像</button>
-                        <button class="flip-btn" id="flipVBtn" onclick="toggleFlipV()">↕️ 垂直镜像</button>
+                    <div class="form-section-title">讲师照片</div>
+                    <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
+                        <div class="upload-text" id="photoPlaceholder"><span>📷</span>点击上传照片</div>
+                        <img id="photoPreviewImg" style="display:none;">
                     </div>
+                    <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
 
-                    <h4 class="form-section-title">🏆 成就</h4>
-                    <div id="achievementsList"></div>
-                    <button class="add-btn" onclick="addAchievement()">+ 添加成就</button>
-
-                    <div class="save-section">
-                        <h4>💾 保存到讲师库</h4>
-                        <div class="form-row">
-                            <div class="form-group" style="margin-bottom:0;">
-                                <input type="text" id="newSpeakerId" placeholder="讲师ID（如：kevin）">
+                    <!-- Enhanced Image Controls -->
+                    <div class="image-controls">
+                        <h5>🎛️ 图片调整</h5>
+                        <div class="control-grid">
+                            <div class="control-item">
+                                <label>水平位置 <span id="posXVal">50%</span></label>
+                                <input type="range" id="photoPositionX" min="0" max="100" value="50" oninput="updateImageControls()">
                             </div>
-                            <button class="add-btn" onclick="saveToSpeakerLibrary()" style="margin-top:0;">保存</button>
-                        </div>
-                    </div>
-
-                    <div class="save-section">
-                        <h4>📋 保存为快捷模板</h4>
-                        <div class="form-row">
-                            <div class="form-group" style="margin-bottom:0;">
-                                <input type="text" id="templateSaveName" placeholder="模板名称">
+                            <div class="control-item">
+                                <label>垂直位置 <span id="posYVal">0%</span></label>
+                                <input type="range" id="photoPositionY" min="0" max="100" value="0" oninput="updateImageControls()">
                             </div>
-                            <button class="add-btn" onclick="saveTemplate()" style="margin-top:0;">保存</button>
+                            <div class="control-item">
+                                <label>缩放 <span id="scaleVal">100%</span></label>
+                                <input type="range" id="photoScale" min="50" max="200" value="100" oninput="updateImageControls()">
+                            </div>
+                            <div class="control-item">
+                                <label>旋转 <span id="rotateVal">0°</span></label>
+                                <input type="range" id="photoRotate" min="-180" max="180" value="0" oninput="updateImageControls()">
+                            </div>
+                            <div class="control-item">
+                                <label>亮度 <span id="brightnessVal">100%</span></label>
+                                <input type="range" id="photoBrightness" min="50" max="150" value="100" oninput="updateImageControls()">
+                            </div>
+                            <div class="control-item">
+                                <label>对比度 <span id="contrastVal">100%</span></label>
+                                <input type="range" id="photoContrast" min="50" max="150" value="100" oninput="updateImageControls()">
+                            </div>
+                            <div class="control-item full">
+                                <label>饱和度 <span id="saturationVal">100%</span></label>
+                                <input type="range" id="photoSaturation" min="0" max="200" value="100" oninput="updateImageControls()">
+                            </div>
+                        </div>
+                        <div class="image-action-btns">
+                            <button class="image-action-btn" id="flipHBtn" onclick="toggleFlip('h')">↔️ 水平翻转</button>
+                            <button class="image-action-btn" id="flipVBtn" onclick="toggleFlip('v')">↕️ 垂直翻转</button>
+                            <button class="image-action-btn" onclick="resetImageControls()">🔄 重置</button>
+                        </div>
+                        <div class="image-action-btns" style="margin-top:8px;">
+                            <button class="image-action-btn removebg" onclick="autoRemoveBg()">✨ AI抠图</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Content Tab -->
                 <div class="tab-content" id="tab-content">
-                    <h4 class="form-section-title">📌 标题</h4>
+                    <div class="form-section-title">徽章</div>
                     <div class="form-group">
                         <label>徽章文字</label>
-                        <input type="text" id="badgeText" value="专业培训" oninput="updatePreview()">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>主标题（中文）</label>
-                            <input type="text" id="mainTitle" placeholder="成功宝典" oninput="onMainTitleInput()">
-                        </div>
-                        <div class="form-group">
-                            <label class="auto-translate-label">主标题（英文）<span class="auto-badge">自动翻译</span></label>
-                            <input type="text" id="mainTitleEn" placeholder="SUCCESS SECRETS" oninput="updatePreview()">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>副标题（中文）</label>
-                            <input type="text" id="subtitle" placeholder="新人必修课" oninput="onSubtitleInput()">
-                        </div>
-                        <div class="form-group">
-                            <label class="auto-translate-label">副标题（英文）<span class="auto-badge">自动翻译</span></label>
-                            <input type="text" id="subtitleEn" placeholder="Essential Course" oninput="updatePreview()">
-                        </div>
+                        <input type="text" id="badge" value="限时直播" oninput="updatePreview()">
                     </div>
 
-                    <h4 class="form-section-title">📋 内容要点</h4>
-                    <div id="contentPointsList"></div>
-                    <button class="add-btn" onclick="addContentPoint()">+ 添加要点</button>
+                    <div class="form-section-title">标题</div>
+                    <div class="form-group">
+                        <label class="auto-translate-label">主标题（中文）<span class="auto-badge api-badge">API翻译</span></label>
+                        <input type="text" id="mainTitle" placeholder="销售成功秘籍" oninput="onMainTitleInput()">
+                    </div>
+                    <div class="form-group">
+                        <label>主标题（英文）</label>
+                        <input type="text" id="mainTitleEn" placeholder="自动翻译或手动输入" oninput="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label class="auto-translate-label">副标题（中文）<span class="auto-badge api-badge">API翻译</span></label>
+                        <input type="text" id="subtitle" placeholder="新人入门必修课" oninput="onSubtitleInput()">
+                    </div>
+                    <div class="form-group">
+                        <label>副标题（英文）</label>
+                        <input type="text" id="subtitleEn" placeholder="自动翻译或手动输入" oninput="updatePreview()">
+                    </div>
+
+                    <!-- AI Translate Button -->
+                    <div class="ai-translate-section">
+                        <h5>🌐 AI智能翻译</h5>
+                        <button class="ai-translate-btn" onclick="translateAllFields()" id="translateAllBtn">一键翻译所有中文内容</button>
+                    </div>
+
+                    <div class="form-section-title">内容要点</div>
+                    <div class="dynamic-items" id="pointsList">
+                        <div class="dynamic-item">
+                            <input type="text" placeholder="要点1" oninput="updatePreview()">
+                            <button class="remove-btn" onclick="removeItem(this)">✕</button>
+                        </div>
+                    </div>
+                    <button class="add-item-btn" onclick="addPoint()">+ 添加要点</button>
                 </div>
 
                 <!-- Meeting Tab -->
                 <div class="tab-content" id="tab-meeting">
-                    <h4 class="form-section-title">📅 时间</h4>
+                    <div class="form-section-title">会议时间</div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>日期</label>
-                            <input type="date" id="meetingDate" oninput="updatePreview()">
+                            <input type="date" id="meetingDate" onchange="updatePreview()">
                         </div>
                         <div class="form-group">
-                            <label>时间(加州/24小时)</label>
-                            <input type="time" id="meetingTime" value="18:00" oninput="updatePreview()">
+                            <label>时间（加州）</label>
+                            <input type="time" id="meetingTime" onchange="updatePreview()">
                         </div>
                     </div>
+                    <div class="form-hint">自动转换为北京时间和纽约时间</div>
 
-                    <h4 class="form-section-title">🔗 会议详情</h4>
+                    <div class="form-section-title">Zoom 信息</div>
                     <div class="form-group">
-                        <label>会议主题</label>
-                        <input type="text" id="meetingTopic" placeholder="How to close a policy" oninput="updatePreview()">
+                        <label>Zoom 链接 <span class="auto-badge" style="background:#e8f5e9;color:#2e7d32;">自动记忆</span></label>
+                        <input type="text" id="zoomLink" placeholder="https://zoom.us/j/..." oninput="updatePreview();saveZoomInfo()">
                     </div>
-                    <div class="form-group">
-                        <label>会议平台</label>
-                        <input type="text" id="meetingPlatform" value="Zoom Online Meeting" oninput="updatePreview()">
-                    </div>
-                    <div class="form-group">
-                        <label>Zoom链接</label>
-                        <input type="text" id="zoomLink" placeholder="https://zoom.us/j/..." oninput="updatePreview()">
-                    </div>
-                    <div class="form-group">
-                        <label>Meeting ID</label>
-                        <input type="text" id="meetingId" placeholder="875 2044 2346" oninput="updatePreview()">
-                    </div>
-
-                    <h4 class="form-section-title">📝 通知文字</h4>
-                    <div class="form-group">
-                        <label>团队名称</label>
-                        <input type="text" id="teamName" value="Hengsheng Team" oninput="updatePreview()">
-                    </div>
-                    <div class="form-group">
-                        <label>课程亮点</label>
-                        <textarea id="courseHighlight" oninput="updatePreview()">学习如何在实践中持续突破、提升成交率！</textarea>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>会议 ID</label>
+                            <input type="text" id="zoomId" placeholder="123 456 7890" oninput="updatePreview();saveZoomInfo()">
+                        </div>
+                        <div class="form-group">
+                            <label>会议密码</label>
+                            <input type="text" id="zoomPassword" placeholder="可选" oninput="updatePreview();saveZoomInfo()">
+                        </div>
                     </div>
                 </div>
 
                 <!-- Design Tab -->
                 <div class="tab-content" id="tab-design">
-                    <h4 class="form-section-title">🖼️ 自定义背景</h4>
-                    <div class="photo-upload-area" onclick="document.getElementById('bgUpload').click()" style="height:100px;">
-                        <img id="bgPreviewImg" src="" style="display:none;">
-                        <div class="upload-text" id="bgUploadText"><span>🖼️</span>上传背景</div>
-                        <input type="file" id="bgUpload" accept="image/*" style="display:none" onchange="handleBgUpload(event)">
+                    <div class="form-section-title">背景模板</div>
+                    <div class="template-grid" id="templateGrid"></div>
+                    <div class="custom-bg-upload" onclick="document.getElementById('customBgInput').click()">
+                        <span>🖼️ 上传自定义背景</span>
+                        <div class="custom-bg-preview" id="customBgPreview"></div>
                     </div>
-                    <button class="add-btn" onclick="clearCustomBg()" style="background:linear-gradient(135deg,#e74c3c,#c0392b);width:100%;margin-top:8px;">清除背景</button>
+                    <input type="file" id="customBgInput" accept="image/*" style="display:none;" onchange="handleCustomBgUpload(event)">
 
-                    <div class="image-library" id="bgLibrarySection">
-                        <h5>📁 已保存的背景图片</h5>
-                        <div class="image-library-grid" id="bgLibraryGrid"></div>
-                        <button class="save-to-library-btn" onclick="saveCurrentBgToLibrary()">💾 保存当前背景到图片库</button>
+                    <div class="form-section-title">配色方案</div>
+                    <div class="color-schemes" id="colorSchemes"></div>
+
+                    <div class="form-section-title">品牌信息</div>
+                    <div class="form-group">
+                        <label>品牌名称</label>
+                        <input type="text" id="brandName" value="HENGSHENG" oninput="updatePreview()">
                     </div>
-
-                    <h4 class="form-section-title">🎨 背景风格</h4>
-                    <div class="template-grid">
-                        <div class="template-option selected" data-template="1" onclick="selectTemplate(1)">
-                            <div class="template-preview" style="background: linear-gradient(170deg, #080c14 0%, #1a2744 70%, #0a1020 100%);"></div>
-                            <div class="template-name">金蓝尊贵</div>
-                        </div>
-                        <div class="template-option" data-template="2" onclick="selectTemplate(2)">
-                            <div class="template-preview" style="background: linear-gradient(170deg, #061220 0%, #1e4068 70%, #0a1830 100%);"></div>
-                            <div class="template-name">专业蓝</div>
-                        </div>
-                        <div class="template-option" data-template="3" onclick="selectTemplate(3)">
-                            <div class="template-preview" style="background: linear-gradient(170deg, #2a0505 0%, #8b1a1a 70%, #3a0808 100%);"></div>
-                            <div class="template-name">红金财运</div>
-                        </div>
-                        <div class="template-option" data-template="4" onclick="selectTemplate(4)">
-                            <div class="template-preview" style="background: linear-gradient(170deg, #051510 0%, #1a4035 70%, #081a14 100%);"></div>
-                            <div class="template-name">翡翠财富</div>
-                        </div>
-                        <div class="template-option" data-template="5" onclick="selectTemplate(5)">
-                            <div class="template-preview" style="background: linear-gradient(170deg, #0d0515 0%, #2d1850 70%, #120820 100%);"></div>
-                            <div class="template-name">皇家紫</div>
-                        </div>
-                        <div class="template-option" data-template="6" onclick="selectTemplate(6)">
-                            <div class="template-preview" style="background: linear-gradient(180deg, #fff 0%, #f5f5f5 100%);border:1px solid #ddd;"></div>
-                            <div class="template-name">简约白</div>
-                        </div>
-                    </div>
-
-                    <h4 class="form-section-title">🎨 文字配色</h4>
-                    <div class="color-schemes">
-                        <div>
-                            <div class="color-scheme-btn active" data-scheme="1" onclick="selectColorScheme(1)">
-                                <div class="scheme-preview">
-                                    <div style="background:#daa520;"></div>
-                                    <div style="background:#ffd700;"></div>
-                                </div>
-                            </div>
-                            <div class="color-scheme-name">金色</div>
-                        </div>
-                        <div>
-                            <div class="color-scheme-btn" data-scheme="2" onclick="selectColorScheme(2)">
-                                <div class="scheme-preview">
-                                    <div style="background:#1e90ff;"></div>
-                                    <div style="background:#87ceeb;"></div>
-                                </div>
-                            </div>
-                            <div class="color-scheme-name">海蓝</div>
-                        </div>
-                        <div>
-                            <div class="color-scheme-btn" data-scheme="3" onclick="selectColorScheme(3)">
-                                <div class="scheme-preview">
-                                    <div style="background:#ff1493;"></div>
-                                    <div style="background:#ffb6c1;"></div>
-                                </div>
-                            </div>
-                            <div class="color-scheme-name">玫瑰</div>
-                        </div>
-                        <div>
-                            <div class="color-scheme-btn" data-scheme="4" onclick="selectColorScheme(4)">
-                                <div class="scheme-preview">
-                                    <div style="background:#32cd32;"></div>
-                                    <div style="background:#98fb98;"></div>
-                                </div>
-                            </div>
-                            <div class="color-scheme-name">清新</div>
-                        </div>
-                        <div>
-                            <div class="color-scheme-btn" data-scheme="5" onclick="selectColorScheme(5)">
-                                <div class="scheme-preview">
-                                    <div style="background:#c0c0c0;"></div>
-                                    <div style="background:#fff;"></div>
-                                </div>
-                            </div>
-                            <div class="color-scheme-name">纯白</div>
-                        </div>
+                    <div class="form-group">
+                        <label>品牌口号</label>
+                        <input type="text" id="brandTagline" value="共创财富 · 成就未来" oninput="updatePreview()">
                     </div>
                 </div>
-            </div>
 
-            <!-- Preview -->
-            <div class="preview-section">
-                <div class="preview-card">
-                    <h3>📱 海报预览</h3>
-                    <div class="poster-preview-container">
-                        <div class="poster template-1 scheme-1" id="posterPreview">
-                            <div class="poster-bg" id="posterBg"></div>
-                            <div class="bg-decor-layer" id="bgDecorLayer">
-                                <div class="bg-accent"></div>
-                                <div class="bg-accent-2"></div>
-                            </div>
-                            <div class="poster-content">
-                                <div class="poster-top">
-                                    <div class="poster-badge" id="posterBadge">专业培训</div>
-                                    <h1 class="poster-main-title" id="posterMainTitle">成功宝典</h1>
-                                    <p class="poster-main-title-en" id="posterMainTitleEn">SUCCESS SECRETS</p>
-                                    <p class="poster-subtitle" id="posterSubtitle">新人必修课</p>
-                                    <p class="poster-subtitle-en" id="posterSubtitleEn">Essential Course</p>
-                                </div>
-                                <div class="poster-middle">
-                                    <div class="photo-container">
-                                        <div class="photo-wrapper">
-                                            <div class="photo-glow" id="photoGlow"></div>
-                                            <img class="speaker-photo" id="posterPhoto" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='200' viewBox='0 0 150 200'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%231a1a2e' stop-opacity='0.3'/%3E%3Cstop offset='100%25' stop-color='%230a0f1a' stop-opacity='0.6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='150' height='200' rx='10'/%3E%3Ctext x='75' y='95' text-anchor='middle' fill='%23d4af37' font-size='11'%3E上传照片%3C/text%3E%3Ctext x='75' y='112' text-anchor='middle' fill='%23666' font-size='9'%3EUpload Photo%3C/text%3E%3C/svg%3E">
-                                        </div>
-                                    </div>
-                                    <div class="info-container">
-                                        <h2 class="speaker-name" id="posterSpeakerName">范凯文</h2>
-                                        <p class="speaker-name-en" id="posterSpeakerNameEn">Kevin Fan</p>
-                                        <p class="speaker-title" id="posterSpeakerTitle">多年行业实战导师 | 团队领航人</p>
-                                        <div class="content-points" id="posterContentPoints"></div>
-                                    </div>
-                                    <div class="gradient-lines" id="gradientLines">
-                                        <div class="gradient-line"></div>
-                                        <div class="gradient-line"></div>
-                                        <div class="gradient-line"></div>
-                                    </div>
-                                </div>
-                                <div class="poster-bottom">
-                                    <div class="footer-line"></div>
-                                    <div class="meeting-date" id="posterMeetingDate">01/21</div>
-                                    <div class="meeting-time-display" id="posterPlatform">Zoom Online Meeting</div>
-                                    <div class="timezone-info" id="posterTimezone">加州 18:00 | 北京 10:00 | 纽约 21:00</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="action-buttons">
+                <!-- Export Tab -->
+                <div class="tab-content" id="tab-export">
+                    <div class="form-section-title">单张导出</div>
+                    <div class="action-buttons" style="justify-content:flex-start;margin-top:0;">
                         <button class="action-btn primary" onclick="downloadPoster()">📥 下载海报</button>
+                        <button class="action-btn secondary" onclick="copyNotification()">📋 复制通知</button>
                     </div>
-                </div>
 
-                <div class="preview-card">
-                    <h3>📝 文字通知</h3>
-                    <div class="text-notification" id="textNotification"></div>
-                    <div class="action-buttons">
-                        <button class="action-btn secondary" onclick="copyText()">📋 复制</button>
-                        <button class="action-btn tertiary" onclick="sendEmail()">📧 邮件</button>
+                    <!-- Batch Export -->
+                    <div class="batch-export-section">
+                        <h4>📦 批量导出</h4>
+                        <p style="font-size:11px;color:#880e4f;margin-bottom:10px;">选择要导出的尺寸（可多选）：</p>
+                        <div class="batch-options" id="batchOptions">
+                            <div class="batch-option selected" data-size="1080x1920">1080×1920 (手机)</div>
+                            <div class="batch-option" data-size="1200x1500">1200×1500 (Instagram)</div>
+                            <div class="batch-option" data-size="1920x1080">1920×1080 (横屏)</div>
+                            <div class="batch-option" data-size="800x1200">800×1200 (小尺寸)</div>
+                        </div>
+                        <button class="batch-export-btn" onclick="batchExport()">🚀 批量导出选中尺寸</button>
                     </div>
+
+                    <div class="form-section-title" style="margin-top:25px;">历史记录</div>
+                    <div id="historyList" style="max-height:200px;overflow-y:auto;"></div>
                 </div>
             </div>
-        </main>
+
+            <!-- Preview Section -->
+            <div class="preview-section">
+                <div class="preview-container">
+                    <div class="poster-preview" id="posterPreview"></div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn primary" onclick="downloadPoster()">📥 下载海报</button>
+                    <button class="action-btn secondary" onclick="copyNotification()">📋 复制通知</button>
+                    <button class="action-btn secondary" onclick="openEmailClient()">📧 邮件</button>
+                </div>
+                <div class="history-section" id="historySection">
+                    <h4>📜 历史记录</h4>
+                    <div id="historyListPreview"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modals -->
     <div class="modal-overlay" id="speakerModal">
-        <div class="modal">
-            <button class="modal-close" onclick="closeSpeakerModal()">×</button>
-            <h2>📚 讲师库管理</h2>
-            <div id="speakerLibraryList"></div>
-            <p style="color:#888;font-size:11px;margin-top:15px;">点击"加载"使用讲师信息，点击"删除"移除讲师</p>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>👥 讲师库</h3>
+                <button class="modal-close" onclick="closeModal('speakerModal')">✕</button>
+            </div>
+            <div class="speaker-library-list" id="speakerLibraryList"></div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="templatesModal">
-        <div class="modal">
-            <button class="modal-close" onclick="closeTemplatesModal()">×</button>
-            <h2>💾 已保存模板</h2>
-            <div id="savedTemplatesList"></div>
+    <div class="modal-overlay" id="templateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📑 我的模板</h3>
+                <button class="modal-close" onclick="closeModal('templateModal')">✕</button>
+            </div>
+            <div class="speaker-library-list" id="templateLibraryList"></div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="imageLibraryModal">
-        <div class="modal">
-            <button class="modal-close" onclick="closeImageLibraryModal()">×</button>
-            <h2>🖼️ 图片库管理</h2>
-            <h4 style="margin-top:15px;font-size:13px;color:#1a1a2e;">📷 讲师照片</h4>
-            <div class="image-library-grid" id="modalPhotoGrid" style="margin:10px 0;"></div>
-            <h4 style="margin-top:20px;font-size:13px;color:#1a1a2e;">🖼️ 背景图片</h4>
-            <div class="image-library-grid" id="modalBgGrid" style="margin:10px 0;"></div>
-            <p style="color:#888;font-size:11px;margin-top:15px;">点击图片可直接使用，悬停显示删除按钮</p>
+    <div class="modal-overlay" id="apiModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚙️ API 设置</h3>
+                <button class="modal-close" onclick="closeModal('apiModal')">✕</button>
+            </div>
+            <div class="form-group">
+                <label>Remove.bg API Key（用于自动抠图）</label>
+                <input type="text" class="api-key-input" id="removebgApiKey" value="NfXtw5Uo4JZ5GvpAmrQF9dB3" placeholder="输入你的API Key">
+                <p class="api-key-hint">
+                    免费获取：<a href="https://www.remove.bg/api" target="_blank">https://www.remove.bg/api</a><br>
+                    每月免费50张抠图额度
+                </p>
+            </div>
+            <button class="auth-btn" onclick="saveApiKeys()">保存设置</button>
         </div>
     </div>
 
     <div class="toast" id="toast"></div>
 
     <script>
-        const ACCESS_PASSWORD = 'Hengsheng2026';
+        // ============ FIREBASE CONFIG ============
+        const firebaseConfig = {
+            apiKey: "AIzaSyBS83JliIcoJg2T9nVXG5KUXT9n0nQ-bFM",
+            authDomain: "prompt-generator-36ba4.firebaseapp.com",
+            projectId: "prompt-generator-36ba4",
+            storageBucket: "prompt-generator-36ba4.firebasestorage.app",
+            messagingSenderId: "821549798685",
+            appId: "1:821549798685:web:49606727e49367e0cc7df4"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        let currentUser = null;
+
+        // ============ STATE ============
+        let state = {
+            template: 1, colorScheme: 1, photo: '', customBg: '',
+            photoPosition: { x: 50, y: 0 }, photoScale: 100, photoRotate: 0,
+            photoBrightness: 100, photoContrast: 100, photoSaturation: 100,
+            flipH: false, flipV: false, removebgApiKey: 'NfXtw5Uo4JZ5GvpAmrQF9dB3'
+        };
+
+        const colorSchemes = {
+            1: { primary: '#1a1a2e', accent: '#d4af37', gradient: 'linear-gradient(180deg, rgba(26,26,46,0.95) 0%, rgba(26,26,46,0.8) 100%)' },
+            2: { primary: '#0d2137', accent: '#c9a227', gradient: 'linear-gradient(180deg, rgba(13,33,55,0.95) 0%, rgba(13,33,55,0.8) 100%)' },
+            3: { primary: '#1a0a2e', accent: '#9b59b6', gradient: 'linear-gradient(180deg, rgba(26,10,46,0.95) 0%, rgba(26,10,46,0.8) 100%)' },
+            4: { primary: '#0a1a2e', accent: '#3498db', gradient: 'linear-gradient(180deg, rgba(10,26,46,0.95) 0%, rgba(10,26,46,0.8) 100%)' },
+            5: { primary: '#1a2e1a', accent: '#27ae60', gradient: 'linear-gradient(180deg, rgba(26,46,26,0.95) 0%, rgba(26,46,26,0.8) 100%)' }
+        };
+
+        const defaultSpeakers = {
+            lisa: { name: 'Lisa Yao', nameEn: 'Lisa Yao', title: '移民公司总裁 | 资深行业导师', achievements: ['多年传统生意老板', '美国移民区域中心负责人', '曾创立中美会员上万家的行销网络平台'], photo: '' },
+            shirley: { name: 'Shirley Wang', nameEn: 'Shirley Wang', title: '资深行业导师 | 金融科技公司CEO', achievements: ['金融数学双硕士', '曾在华尔街和中国银行任职', '保险公司高管'], photo: '' }
+        };
 
         // ============ TRANSLATION DICTIONARY ============
         const translationDict = {
-            // Common titles/words
-            '成功': 'Success', '宝典': 'Secrets', '秘籍': 'Tips', '攻略': 'Guide',
-            '课程': 'Course', '培训': 'Training', '讲座': 'Seminar', '分享': 'Sharing',
-            '新人': 'Beginner', '必修': 'Essential', '进阶': 'Advanced', '高级': 'Premium',
-            '入门': 'Introduction', '基础': 'Basic', '实战': 'Practical', '实操': 'Hands-on',
-            '技巧': 'Skills', '方法': 'Methods', '策略': 'Strategy', '秘诀': 'Secrets',
-            '心法': 'Mindset', '底层': 'Core', '逻辑': 'Logic', '思维': 'Thinking',
-            '收益': 'Benefits', '回报': 'Returns', '财富': 'Wealth', '增长': 'Growth',
-            '突破': 'Breakthrough', '提升': 'Improvement', '成长': 'Development',
-            '销售': 'Sales', '营销': 'Marketing', '推广': 'Promotion', '客户': 'Client',
-            '成交': 'Closing', '签单': 'Deal', '业绩': 'Performance', '目标': 'Goal',
-            '团队': 'Team', '领导': 'Leadership', '管理': 'Management', '协作': 'Collaboration',
-            '专业': 'Professional', '资深': 'Senior', '导师': 'Mentor', '讲师': 'Instructor',
-            '总裁': 'President', '创始人': 'Founder', '经理': 'Manager', '顾问': 'Consultant',
-            '金融': 'Finance', '投资': 'Investment', '理财': 'Wealth Management',
-            '保险': 'Insurance', '房产': 'Real Estate', '移民': 'Immigration',
-            '年度': 'Annual', '季度': 'Quarterly', '月度': 'Monthly', '每周': 'Weekly',
-            '精英': 'Elite', '冠军': 'Champion', '明星': 'Star', '标杆': 'Benchmark',
-            '揭秘': 'Reveal', '解密': 'Decode', '深度': 'Deep', '全面': 'Comprehensive',
-            '快速': 'Quick', '高效': 'Efficient', '轻松': 'Easy', '简单': 'Simple',
-            '系统': 'System', '体系': 'Framework', '模式': 'Model', '流程': 'Process',
-            '借力': 'Leverage', '神器': 'Tool', '武器': 'Weapon', '法宝': 'Secret Weapon',
-            '手把手': 'Step by Step', '一对一': 'One on One', '面对面': 'Face to Face'
+            '成功': 'SUCCESS', '宝典': 'SECRETS', '秘籍': 'TIPS', '攻略': 'GUIDE',
+            '课程': 'COURSE', '培训': 'TRAINING', '讲座': 'SEMINAR', '分享': 'SHARING',
+            '新人': 'BEGINNER', '必修': 'ESSENTIAL', '进阶': 'ADVANCED', '高级': 'PREMIUM',
+            '入门': 'INTRODUCTION', '基础': 'BASIC', '实战': 'PRACTICAL', '实操': 'HANDS-ON',
+            '技巧': 'SKILLS', '方法': 'METHODS', '策略': 'STRATEGY', '秘诀': 'SECRETS',
+            '销售': 'SALES', '营销': 'MARKETING', '客户': 'CLIENT', '成交': 'CLOSING',
+            '团队': 'TEAM', '领导': 'LEADERSHIP', '管理': 'MANAGEMENT', '专业': 'PROFESSIONAL',
+            '金融': 'FINANCE', '投资': 'INVESTMENT', '理财': 'WEALTH MANAGEMENT',
+            '保险': 'INSURANCE', '房产': 'REAL ESTATE', '移民': 'IMMIGRATION',
+            '精英': 'ELITE', '冠军': 'CHAMPION', '明星': 'STAR', '揭秘': 'REVEAL',
+            '快速': 'QUICK', '高效': 'EFFICIENT', '轻松': 'EASY', '简单': 'SIMPLE',
+            '系统': 'SYSTEM', '体系': 'FRAMEWORK', '模式': 'MODEL', '流程': 'PROCESS',
+            '直播': 'LIVE', '限时': 'LIMITED TIME', '免费': 'FREE', '独家': 'EXCLUSIVE',
+            '致富': 'GET RICH', '赚钱': 'MAKE MONEY', '创业': 'STARTUP', '商业': 'BUSINESS'
         };
 
-        // Pinyin mapping for names
+        const compoundSurnames = { '欧阳': 'Ouyang', '司马': 'Sima', '上官': 'Shangguan', '诸葛': 'Zhuge', '东方': 'Dongfang', '慕容': 'Murong' };
         const pinyinMap = {
-            '范': 'Fan', '李': 'Li', '王': 'Wang', '张': 'Zhang', '刘': 'Liu',
-            '陈': 'Chen', '杨': 'Yang', '黄': 'Huang', '周': 'Zhou', '吴': 'Wu',
-            '赵': 'Zhao', '徐': 'Xu', '孙': 'Sun', '马': 'Ma', '胡': 'Hu',
-            '林': 'Lin', '郭': 'Guo', '何': 'He', '高': 'Gao', '罗': 'Luo',
-            '郑': 'Zheng', '梁': 'Liang', '谢': 'Xie', '宋': 'Song', '唐': 'Tang',
-            '许': 'Xu', '邓': 'Deng', '冯': 'Feng', '韩': 'Han', '曹': 'Cao',
-            '彭': 'Peng', '曾': 'Zeng', '萧': 'Xiao', '田': 'Tian', '董': 'Dong',
-            '潘': 'Pan', '袁': 'Yuan', '蔡': 'Cai', '蒋': 'Jiang', '余': 'Yu',
-            '姚': 'Yao', '叶': 'Ye', '章': 'Zhang', '鲁': 'Lu', '韦': 'Wei',
-            '石': 'Shi', '戴': 'Dai', '崔': 'Cui', '任': 'Ren', '陆': 'Lu',
-            '凯': 'Kai', '文': 'Wen', '明': 'Ming', '华': 'Hua', '伟': 'Wei',
-            '强': 'Qiang', '军': 'Jun', '磊': 'Lei', '洋': 'Yang', '勇': 'Yong',
-            '杰': 'Jie', '娟': 'Juan', '敏': 'Min', '静': 'Jing', '丽': 'Li',
-            '艳': 'Yan', '芳': 'Fang', '玲': 'Ling', '娜': 'Na', '秀': 'Xiu',
-            '萍': 'Ping', '霞': 'Xia', '燕': 'Yan', '红': 'Hong', '梅': 'Mei'
+            '范': 'Fan', '李': 'Li', '王': 'Wang', '张': 'Zhang', '刘': 'Liu', '陈': 'Chen', '杨': 'Yang', '黄': 'Huang',
+            '周': 'Zhou', '吴': 'Wu', '赵': 'Zhao', '徐': 'Xu', '孙': 'Sun', '马': 'Ma', '林': 'Lin', '郭': 'Guo',
+            '凯': 'Kai', '文': 'Wen', '明': 'Ming', '华': 'Hua', '伟': 'Wei', '强': 'Qiang', '军': 'Jun', '磊': 'Lei',
+            '杰': 'Jie', '娟': 'Juan', '敏': 'Min', '静': 'Jing', '丽': 'Li', '艳': 'Yan', '芳': 'Fang', '玲': 'Ling',
+            '浩': 'Hao', '博': 'Bo', '涛': 'Tao', '鹏': 'Peng', '飞': 'Fei', '龙': 'Long', '峰': 'Feng', '海': 'Hai',
+            '欣': 'Xin', '颖': 'Ying', '婷': 'Ting', '雪': 'Xue', '琳': 'Lin', '倩': 'Qian', '莉': 'Li', '瑶': 'Yao'
         };
 
-        // Translate Chinese name to English
-        function translateName(chineseName) {
-            if (!chineseName || !/[\u4e00-\u9fa5]/.test(chineseName)) return '';
-            let result = [];
-            for (let char of chineseName) {
-                if (pinyinMap[char]) {
-                    result.push(pinyinMap[char]);
-                }
+        // ============ TRANSLATION FUNCTIONS ============
+        function translateName(name) {
+            if (!name || !/[\u4e00-\u9fa5]/.test(name)) return '';
+            let result = [], i = 0;
+            if (name.length >= 2) {
+                const first2 = name.substring(0, 2);
+                if (compoundSurnames[first2]) { result.push(compoundSurnames[first2]); i = 2; }
             }
-            return result.length > 0 ? result.join(' ') : '';
+            for (; i < name.length; i++) { if (pinyinMap[name[i]]) result.push(pinyinMap[name[i]]); }
+            return result.join(' ');
         }
 
-        // Translate Chinese text to English
-        function translateText(text) {
+        function translateTextLocal(text) {
             if (!text || !/[\u4e00-\u9fa5]/.test(text)) return '';
-            let result = text;
-            // Sort by length (longer phrases first)
+            let words = [], remaining = text;
             const sortedKeys = Object.keys(translationDict).sort((a, b) => b.length - a.length);
-            for (let cn of sortedKeys) {
-                result = result.replace(new RegExp(cn, 'g'), translationDict[cn]);
-            }
-            // If still has Chinese, return empty
-            if (/[\u4e00-\u9fa5]/.test(result)) {
-                // Try to construct something meaningful
-                let words = [];
+            while (remaining.length > 0 && /[\u4e00-\u9fa5]/.test(remaining)) {
+                let found = false;
                 for (let cn of sortedKeys) {
-                    if (text.includes(cn)) {
-                        words.push(translationDict[cn]);
-                    }
+                    if (remaining.startsWith(cn)) { words.push(translationDict[cn]); remaining = remaining.substring(cn.length); found = true; break; }
                 }
-                return words.slice(0, 3).join(' ').toUpperCase();
+                if (!found) remaining = remaining.substring(1);
             }
-            return result.toUpperCase();
+            return words.join(' ');
         }
 
-        // Auto-translate handlers
-        function onChineseNameInput() {
-            const cn = document.getElementById('speakerName').value;
-            const enField = document.getElementById('speakerNameEn');
-            if (cn && !enField.dataset.userEdited) {
-                const translated = translateName(cn);
-                if (translated) enField.value = translated;
-            }
-            updatePreview();
+        // Online Translation API (MyMemory - Free)
+        async function translateTextOnline(text) {
+            if (!text || !/[\u4e00-\u9fa5]/.test(text)) return '';
+            try {
+                const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=zh-CN|en`);
+                const data = await response.json();
+                if (data.responseStatus === 200) {
+                    return data.responseData.translatedText.toUpperCase();
+                }
+            } catch (e) { console.error('Translation API error:', e); }
+            return translateTextLocal(text); // Fallback to local
         }
 
-        function onMainTitleInput() {
-            const cn = document.getElementById('mainTitle').value;
-            const enField = document.getElementById('mainTitleEn');
-            if (cn && !enField.dataset.userEdited) {
-                const translated = translateText(cn);
-                if (translated) enField.value = translated;
-            }
-            updatePreview();
+        async function translateAllFields() {
+            const btn = document.getElementById('translateAllBtn');
+            btn.disabled = true; btn.textContent = '翻译中...';
+            try {
+                const mainTitle = document.getElementById('mainTitle').value;
+                const subtitle = document.getElementById('subtitle').value;
+                const speakerName = document.getElementById('speakerName').value;
+
+                if (mainTitle) {
+                    const translated = await translateTextOnline(mainTitle);
+                    if (translated) document.getElementById('mainTitleEn').value = translated;
+                }
+                if (subtitle) {
+                    const translated = await translateTextOnline(subtitle);
+                    if (translated) document.getElementById('subtitleEn').value = translated;
+                }
+                if (speakerName) {
+                    const translated = translateName(speakerName);
+                    if (translated) document.getElementById('speakerNameEn').value = translated;
+                }
+                updatePreview();
+                showToast('翻译完成！', 'success');
+            } catch (e) { showToast('翻译失败', 'error'); }
+            btn.disabled = false; btn.textContent = '一键翻译所有中文内容';
         }
 
-        function onSubtitleInput() {
-            const cn = document.getElementById('subtitle').value;
-            const enField = document.getElementById('subtitleEn');
-            if (cn && !enField.dataset.userEdited) {
-                const translated = translateText(cn);
-                if (translated) enField.value = translated;
+        // ============ REMOVE.BG API ============
+        async function autoRemoveBg() {
+            if (!state.photo) { showToast('请先上传照片', 'error'); return; }
+            if (!state.removebgApiKey) {
+                showToast('请先设置 Remove.bg API Key', 'error');
+                openApiSettings();
+                return;
             }
-            updatePreview();
+            showLoading('正在AI抠图...');
+            try {
+                const blob = await fetch(state.photo).then(r => r.blob());
+                const formData = new FormData();
+                formData.append('image_file', blob);
+                formData.append('size', 'auto');
+
+                const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+                    method: 'POST',
+                    headers: { 'X-Api-Key': state.removebgApiKey },
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error('API请求失败');
+                const resultBlob = await response.blob();
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    state.photo = e.target.result;
+                    document.getElementById('photoPreviewImg').src = e.target.result;
+                    updatePreview();
+                    hideLoading();
+                    showToast('抠图成功！', 'success');
+                };
+                reader.readAsDataURL(resultBlob);
+            } catch (e) {
+                hideLoading();
+                showToast('抠图失败：' + e.message, 'error');
+            }
         }
 
-        // Mark English fields as user-edited when manually changed
-        document.addEventListener('DOMContentLoaded', () => {
-            ['speakerNameEn', 'mainTitleEn', 'subtitleEn'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.addEventListener('input', function() {
-                        this.dataset.userEdited = 'true';
+        // ============ AUTH FUNCTIONS ============
+        function switchAuthTab(tab) {
+            document.getElementById('authError').classList.remove('show');
+            document.getElementById('authSuccess').classList.remove('show');
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            if (tab === 'login') { document.querySelectorAll('.auth-tab')[0].classList.add('active'); document.getElementById('loginForm').classList.add('active'); }
+            else if (tab === 'register') { document.querySelectorAll('.auth-tab')[1].classList.add('active'); document.getElementById('registerForm').classList.add('active'); }
+        }
+        function showForgotPassword() {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            document.getElementById('forgotForm').classList.add('active');
+        }
+        function showAuthError(msg) { document.getElementById('authError').textContent = msg; document.getElementById('authError').classList.add('show'); }
+        function showAuthSuccess(msg) { document.getElementById('authSuccess').textContent = msg; document.getElementById('authSuccess').classList.add('show'); }
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            if (!email) { showAuthError('请输入邮箱'); return; }
+            if (!password) { showAuthError('请输入密码'); return; }
+            document.getElementById('loginBtn').disabled = true;
+            try { await auth.signInWithEmailAndPassword(email, password); }
+            catch (e) { showAuthError(e.code === 'auth/invalid-credential' ? '邮箱或密码错误' : '登录失败'); }
+            document.getElementById('loginBtn').disabled = false;
+        }
+
+        async function handleRegister() {
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirm = document.getElementById('registerConfirmPassword').value;
+            if (!email) { showAuthError('请输入邮箱'); return; }
+            if (password.length < 6) { showAuthError('密码至少6位'); return; }
+            if (password !== confirm) { showAuthError('两次密码不一致'); return; }
+            document.getElementById('registerBtn').disabled = true;
+            try { await auth.createUserWithEmailAndPassword(email, password); }
+            catch (e) { showAuthError(e.code === 'auth/email-already-in-use' ? '邮箱已注册' : '注册失败'); }
+            document.getElementById('registerBtn').disabled = false;
+        }
+
+        async function handleForgotPassword() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            if (!email) { showAuthError('请输入邮箱'); return; }
+            try { await auth.sendPasswordResetEmail(email); showAuthSuccess('重置邮件已发送'); }
+            catch (e) { showAuthError('发送失败'); }
+        }
+
+        async function handleLogout() { await auth.signOut(); }
+
+        // ============ FIRESTORE FUNCTIONS ============
+        async function loadUserData() {
+            if (!currentUser) return;
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    const data = userDoc.data();
+                    if (data.zoomLink) document.getElementById('zoomLink').value = data.zoomLink;
+                    if (data.zoomId) document.getElementById('zoomId').value = data.zoomId;
+                    if (data.zoomPassword) document.getElementById('zoomPassword').value = data.zoomPassword;
+                    if (data.removebgApiKey) { state.removebgApiKey = data.removebgApiKey; document.getElementById('removebgApiKey').value = data.removebgApiKey; }
+                }
+                await loadHistory();
+            } catch (e) { console.error('Load user data error:', e); }
+        }
+
+        async function saveZoomInfo() {
+            if (!currentUser) return;
+            try {
+                await db.collection('users').doc(currentUser.uid).set({
+                    zoomLink: document.getElementById('zoomLink').value,
+                    zoomId: document.getElementById('zoomId').value,
+                    zoomPassword: document.getElementById('zoomPassword').value,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            } catch (e) { console.error('Save Zoom error:', e); }
+        }
+
+        async function saveApiKeys() {
+            const removebgKey = document.getElementById('removebgApiKey').value.trim();
+            state.removebgApiKey = removebgKey;
+            if (currentUser) {
+                try {
+                    await db.collection('users').doc(currentUser.uid).set({ removebgApiKey: removebgKey }, { merge: true });
+                    showToast('API Key 已保存', 'success');
+                } catch (e) { showToast('保存失败', 'error'); }
+            }
+            closeModal('apiModal');
+        }
+
+        async function loadHistory() {
+            if (!currentUser) return;
+            const lists = ['historyList', 'historyListPreview'];
+            for (let listId of lists) {
+                const list = document.getElementById(listId);
+                if (!list) continue;
+                list.innerHTML = '<div style="text-align:center;color:#888;padding:10px;font-size:12px;">加载中...</div>';
+            }
+            try {
+                const snapshot = await db.collection('users').doc(currentUser.uid).collection('history').orderBy('createdAt', 'desc').limit(10).get();
+                let html = '';
+                if (snapshot.empty) { html = '<div style="text-align:center;color:#888;padding:10px;font-size:12px;">暂无历史记录</div>'; }
+                else {
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        html += `<div class="history-item" onclick="loadFromHistory('${doc.id}')">
+                            <div class="history-thumb"></div>
+                            <div class="history-info">
+                                <div class="history-title">${data.mainTitle || '未命名'}</div>
+                                <div class="history-date">${data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString('zh-CN') : ''}</div>
+                            </div>
+                            <button class="history-delete" onclick="event.stopPropagation();deleteHistory('${doc.id}')">删除</button>
+                        </div>`;
                     });
                 }
-            });
-        });
-
-        // Default speakers
-        const defaultSpeakers = {
-            lisa: {
-                name: 'Lisa Yao', nameEn: 'Lisa Yao',
-                title: '移民公司总裁 | 资深行业导师 | 十多年移民行业经验',
-                achievements: ['多年传统生意老板', '美国移民区域中心负责人', '曾创立中美会员上万家的行销网络平台', '现为全球金融家办公司创始人'],
-                photo: ''
-            },
-            shirley: {
-                name: 'Shirley Wang', nameEn: 'Shirley Wang',
-                title: '资深行业导师 | 金融科技公司CEO | 十多年金融领域从业经验',
-                achievements: ['金融数学双硕士', '曾在华尔街和中国银行任职', '保险公司高管', '平台资深导师'],
-                photo: ''
-            }
-        };
-
-        // State
-        let state = {
-            template: 1,
-            colorScheme: 1,
-            photo: '',
-            customBg: '',
-            photoPos: { x: 110, y: -32, size: 100, rotate: 0 },
-            linesPos: 0,
-            flipH: false,
-            flipV: false,
-            speakerLibrary: JSON.parse(localStorage.getItem('speakerLibrary')) || { ...defaultSpeakers },
-            savedTemplates: JSON.parse(localStorage.getItem('savedTemplates')) || [],
-            photoLibrary: JSON.parse(localStorage.getItem('photoLibrary')) || [],
-            bgLibrary: JSON.parse(localStorage.getItem('bgLibrary')) || []
-        };
-
-        // Init
-        function init() {
-            document.getElementById('meetingDate').value = new Date().toISOString().split('T')[0];
-            updateSpeakerSelect();
-            initContentPoints();
-            initAchievements();
-            updatePhotoLibraryGrid();
-            updateBgLibraryGrid();
-            updatePreview();
+                for (let listId of lists) { const list = document.getElementById(listId); if (list) list.innerHTML = html; }
+            } catch (e) { console.error('Load history error:', e); }
         }
 
-        function initContentPoints() {
-            const container = document.getElementById('contentPointsList');
-            container.innerHTML = '';
-            const defaults = [
-                { title: '底层逻辑', titleEn: 'Core Logic', desc: '揭秘销售界的借力神器' },
-                { title: '实操方法', titleEn: 'Methods', desc: '手把手教你实战技巧' },
-                { title: '最终收益', titleEn: 'Benefits', desc: '快速实现业绩突破' }
-            ];
-            defaults.forEach((p, i) => addContentPointWithData(p.title, p.titleEn, p.desc, i === 0));
+        async function saveToHistory() {
+            if (!currentUser) return;
+            const achievements = [], points = [];
+            document.querySelectorAll('#achievementsList input').forEach(i => { if (i.value.trim()) achievements.push(i.value.trim()); });
+            document.querySelectorAll('#pointsList input').forEach(i => { if (i.value.trim()) points.push(i.value.trim()); });
+            try {
+                await db.collection('users').doc(currentUser.uid).collection('history').add({
+                    mainTitle: document.getElementById('mainTitle').value,
+                    speaker: { nameCn: document.getElementById('speakerName').value, nameEn: document.getElementById('speakerNameEn').value, title: document.getElementById('speakerTitle').value, achievements },
+                    content: { badge: document.getElementById('badge').value, mainTitleEn: document.getElementById('mainTitleEn').value, subtitle: document.getElementById('subtitle').value, subtitleEn: document.getElementById('subtitleEn').value, points },
+                    design: { template: state.template, colorScheme: state.colorScheme },
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                await loadHistory();
+            } catch (e) { console.error('Save history error:', e); }
         }
 
-        function initAchievements() {
-            document.getElementById('achievementsList').innerHTML = '';
-            addAchievementWithData('');
+        async function loadFromHistory(docId) {
+            if (!currentUser) return;
+            try {
+                const doc = await db.collection('users').doc(currentUser.uid).collection('history').doc(docId).get();
+                if (!doc.exists) return;
+                const data = doc.data();
+                if (data.mainTitle) document.getElementById('mainTitle').value = data.mainTitle;
+                if (data.speaker) {
+                    document.getElementById('speakerName').value = data.speaker.nameCn || '';
+                    document.getElementById('speakerNameEn').value = data.speaker.nameEn || '';
+                    document.getElementById('speakerTitle').value = data.speaker.title || '';
+                    document.getElementById('achievementsList').innerHTML = '';
+                    (data.speaker.achievements || []).forEach(a => addAchievement(a));
+                }
+                if (data.content) {
+                    document.getElementById('badge').value = data.content.badge || '';
+                    document.getElementById('mainTitleEn').value = data.content.mainTitleEn || '';
+                    document.getElementById('subtitle').value = data.content.subtitle || '';
+                    document.getElementById('subtitleEn').value = data.content.subtitleEn || '';
+                    document.getElementById('pointsList').innerHTML = '';
+                    (data.content.points || []).forEach(p => addPoint(p));
+                }
+                if (data.design) { selectTemplate(data.design.template || 1); selectColorScheme(data.design.colorScheme || 1); }
+                updatePreview();
+                showToast('已加载', 'success');
+            } catch (e) { console.error('Load from history error:', e); }
         }
 
-        // Auth
-        function login() {
-            if (document.getElementById('passwordInput').value === ACCESS_PASSWORD) {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('appContainer').style.display = 'block';
-                init();
-            } else {
-                document.getElementById('loginError').style.display = 'block';
-            }
+        async function deleteHistory(docId) {
+            if (!currentUser || !confirm('确定删除？')) return;
+            try { await db.collection('users').doc(currentUser.uid).collection('history').doc(docId).delete(); showToast('已删除', 'success'); await loadHistory(); }
+            catch (e) { showToast('删除失败', 'error'); }
         }
 
-        function logout() {
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('appContainer').style.display = 'none';
-            document.getElementById('passwordInput').value = '';
-            document.getElementById('loginError').style.display = 'none';
+        async function saveSpeaker() {
+            if (!currentUser) { showToast('请先登录', 'error'); return; }
+            const name = document.getElementById('speakerName').value || document.getElementById('speakerNameEn').value;
+            if (!name) { showToast('请输入姓名', 'error'); return; }
+            const achievements = [];
+            document.querySelectorAll('#achievementsList input').forEach(i => { if (i.value.trim()) achievements.push(i.value.trim()); });
+            try {
+                await db.collection('users').doc(currentUser.uid).collection('speakers').doc(name.toLowerCase().replace(/\s+/g, '_')).set({
+                    name, nameCn: document.getElementById('speakerName').value, nameEn: document.getElementById('speakerNameEn').value,
+                    title: document.getElementById('speakerTitle').value, achievements, photo: state.photo,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                showToast('讲师已保存', 'success');
+            } catch (e) { showToast('保存失败', 'error'); }
         }
 
-        // Tabs
+        async function saveAsTemplate() {
+            if (!currentUser) { showToast('请先登录', 'error'); return; }
+            const name = prompt('模板名称：');
+            if (!name) return;
+            const achievements = [], points = [];
+            document.querySelectorAll('#achievementsList input').forEach(i => { if (i.value.trim()) achievements.push(i.value.trim()); });
+            document.querySelectorAll('#pointsList input').forEach(i => { if (i.value.trim()) points.push(i.value.trim()); });
+            try {
+                await db.collection('users').doc(currentUser.uid).collection('templates').add({
+                    name,
+                    speaker: { nameCn: document.getElementById('speakerName').value, nameEn: document.getElementById('speakerNameEn').value, title: document.getElementById('speakerTitle').value, achievements, photo: state.photo },
+                    content: { badge: document.getElementById('badge').value, mainTitle: document.getElementById('mainTitle').value, mainTitleEn: document.getElementById('mainTitleEn').value, subtitle: document.getElementById('subtitle').value, subtitleEn: document.getElementById('subtitleEn').value, points },
+                    meeting: { date: document.getElementById('meetingDate').value, time: document.getElementById('meetingTime').value },
+                    design: { template: state.template, colorScheme: state.colorScheme, customBg: state.customBg },
+                    brand: { name: document.getElementById('brandName').value, tagline: document.getElementById('brandTagline').value },
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                showToast('模板已保存', 'success');
+            } catch (e) { showToast('保存失败', 'error'); }
+        }
+
+        // ============ UI FUNCTIONS ============
         function switchTab(name) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             event.target.classList.add('active');
-            document.getElementById(`tab-${name}`).classList.add('active');
+            document.getElementById('tab-' + name).classList.add('active');
         }
 
-        // Speaker Library
-        function updateSpeakerSelect() {
-            const select = document.getElementById('speakerSelect');
-            select.innerHTML = '<option value="">-- 从讲师库选择 --</option>';
-            Object.keys(state.speakerLibrary).forEach(id => {
-                const s = state.speakerLibrary[id];
-                select.innerHTML += `<option value="${id}">${s.name}</option>`;
-            });
+        function quickFill(type) {
+            if (defaultSpeakers[type]) {
+                const s = defaultSpeakers[type];
+                document.getElementById('speakerName').value = s.name;
+                document.getElementById('speakerNameEn').value = s.nameEn;
+                document.getElementById('speakerTitle').value = s.title;
+                document.getElementById('achievementsList').innerHTML = '';
+                s.achievements.forEach(a => addAchievement(a));
+                updatePreview();
+            }
         }
 
-        function loadSpeakerFromSelect() {
+        function loadSpeaker() {
             const id = document.getElementById('speakerSelect').value;
-            if (id) loadSpeaker(id);
+            if (defaultSpeakers[id]) quickFill(id);
         }
 
-        function loadSpeaker(id) {
-            const s = state.speakerLibrary[id];
-            if (!s) return;
-            document.getElementById('speakerName').value = s.name || '';
-            document.getElementById('speakerNameEn').value = s.nameEn || s.name || '';
-            document.getElementById('speakerNameEn').dataset.userEdited = 'true';
-            document.getElementById('speakerTitle').value = s.title || '';
-
-            document.getElementById('achievementsList').innerHTML = '';
-            if (s.achievements && s.achievements.length > 0) {
-                s.achievements.forEach(a => addAchievementWithData(a));
-            } else {
-                addAchievementWithData('');
-            }
-
-            if (s.photo) {
-                state.photo = s.photo;
-                document.getElementById('photoPreview').src = s.photo;
-                document.getElementById('photoPreview').style.display = 'block';
-                document.getElementById('uploadText').style.display = 'none';
-            }
-
-            document.getElementById('speakerSelect').value = id;
-            updatePreview();
-            showToast('已加载讲师信息');
+        function addAchievement(val = '') {
+            const c = document.getElementById('achievementsList');
+            const d = document.createElement('div');
+            d.className = 'dynamic-item';
+            d.innerHTML = `<input type="text" placeholder="成就" value="${val}" oninput="updatePreview()"><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
+            c.appendChild(d);
         }
 
-        function clearSpeaker() {
-            document.getElementById('speakerSelect').value = '';
-            document.getElementById('speakerName').value = '';
-            document.getElementById('speakerNameEn').value = '';
-            document.getElementById('speakerNameEn').dataset.userEdited = '';
-            document.getElementById('speakerTitle').value = '';
-            document.getElementById('achievementsList').innerHTML = '';
-            addAchievementWithData('');
-            state.photo = '';
-            state.flipH = false;
-            state.flipV = false;
-            document.getElementById('flipHBtn').classList.remove('active');
-            document.getElementById('flipVBtn').classList.remove('active');
-            document.getElementById('photoPreview').style.display = 'none';
-            document.getElementById('uploadText').style.display = 'block';
-            updatePreview();
+        function addPoint(val = '') {
+            const c = document.getElementById('pointsList');
+            const d = document.createElement('div');
+            d.className = 'dynamic-item';
+            d.innerHTML = `<input type="text" placeholder="要点" value="${val}" oninput="updatePreview()"><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
+            c.appendChild(d);
         }
 
-        function saveToSpeakerLibrary() {
-            const id = document.getElementById('newSpeakerId').value.trim().toLowerCase();
-            if (!id) { showToast('请输入讲师ID'); return; }
-            if (!/^[a-z0-9_]+$/.test(id)) { showToast('ID只能包含小写字母、数字和下划线'); return; }
+        function removeItem(btn) { btn.parentElement.remove(); updatePreview(); }
 
-            state.speakerLibrary[id] = {
-                name: document.getElementById('speakerName').value,
-                nameEn: document.getElementById('speakerNameEn').value,
-                title: document.getElementById('speakerTitle').value,
-                achievements: getAchievements(),
-                photo: state.photo
-            };
-            localStorage.setItem('speakerLibrary', JSON.stringify(state.speakerLibrary));
-            updateSpeakerSelect();
-            document.getElementById('newSpeakerId').value = '';
-            showToast('已保存到讲师库');
-        }
-
-        function deleteSpeaker(id) {
-            if (confirm(`确定删除讲师 "${state.speakerLibrary[id]?.name}" 吗？`)) {
-                delete state.speakerLibrary[id];
-                localStorage.setItem('speakerLibrary', JSON.stringify(state.speakerLibrary));
-                updateSpeakerSelect();
-                openSpeakerLibrary();
-                showToast('已删除');
-            }
-        }
-
-        // Image Library Functions
-        function updatePhotoLibraryGrid() {
-            const grid = document.getElementById('photoLibraryGrid');
-            grid.innerHTML = state.photoLibrary.length === 0
-                ? '<p style="color:#888;font-size:11px;padding:10px;">暂无保存的照片</p>'
-                : state.photoLibrary.map((img, i) => `
-                    <div class="image-library-item" onclick="loadPhotoFromLibrary(${i})">
-                        <img src="${img}" alt="照片${i+1}">
-                        <button class="delete-lib-img" onclick="event.stopPropagation();deletePhotoFromLibrary(${i})">×</button>
-                    </div>
-                `).join('');
-        }
-
-        function updateBgLibraryGrid() {
-            const grid = document.getElementById('bgLibraryGrid');
-            grid.innerHTML = state.bgLibrary.length === 0
-                ? '<p style="color:#888;font-size:11px;padding:10px;">暂无保存的背景</p>'
-                : state.bgLibrary.map((img, i) => `
-                    <div class="image-library-item" onclick="loadBgFromLibrary(${i})">
-                        <img src="${img}" alt="背景${i+1}">
-                        <button class="delete-lib-img" onclick="event.stopPropagation();deleteBgFromLibrary(${i})">×</button>
-                    </div>
-                `).join('');
-        }
-
-        function saveCurrentPhotoToLibrary() {
-            if (!state.photo) { showToast('请先上传照片'); return; }
-            if (state.photoLibrary.includes(state.photo)) { showToast('该照片已在图片库中'); return; }
-            state.photoLibrary.push(state.photo);
-            localStorage.setItem('photoLibrary', JSON.stringify(state.photoLibrary));
-            updatePhotoLibraryGrid();
-            showToast('照片已保存到图片库');
-        }
-
-        function saveCurrentBgToLibrary() {
-            if (!state.customBg) { showToast('请先上传背景图片'); return; }
-            if (state.bgLibrary.includes(state.customBg)) { showToast('该背景已在图片库中'); return; }
-            state.bgLibrary.push(state.customBg);
-            localStorage.setItem('bgLibrary', JSON.stringify(state.bgLibrary));
-            updateBgLibraryGrid();
-            showToast('背景已保存到图片库');
-        }
-
-        function loadPhotoFromLibrary(index) {
-            state.photo = state.photoLibrary[index];
-            document.getElementById('photoPreview').src = state.photo;
-            document.getElementById('photoPreview').style.display = 'block';
-            document.getElementById('uploadText').style.display = 'none';
-            updatePreview();
-            showToast('已加载照片');
-        }
-
-        function loadBgFromLibrary(index) {
-            state.customBg = state.bgLibrary[index];
-            document.getElementById('bgPreviewImg').src = state.customBg;
-            document.getElementById('bgPreviewImg').style.display = 'block';
-            document.getElementById('bgUploadText').style.display = 'none';
-            document.querySelectorAll('.template-option').forEach(o => o.classList.remove('selected'));
-            state.template = 'custom';
-            updatePreview();
-            showToast('已加载背景');
-        }
-
-        function deletePhotoFromLibrary(index) {
-            if (confirm('确定删除这张照片吗？')) {
-                state.photoLibrary.splice(index, 1);
-                localStorage.setItem('photoLibrary', JSON.stringify(state.photoLibrary));
-                updatePhotoLibraryGrid();
-                updateModalLibraryGrids();
-                showToast('已删除');
-            }
-        }
-
-        function deleteBgFromLibrary(index) {
-            if (confirm('确定删除这张背景吗？')) {
-                state.bgLibrary.splice(index, 1);
-                localStorage.setItem('bgLibrary', JSON.stringify(state.bgLibrary));
-                updateBgLibraryGrid();
-                updateModalLibraryGrids();
-                showToast('已删除');
-            }
-        }
-
-        function updateModalLibraryGrids() {
-            document.getElementById('modalPhotoGrid').innerHTML = state.photoLibrary.length === 0
-                ? '<p style="color:#888;font-size:11px;">暂无保存的照片</p>'
-                : state.photoLibrary.map((img, i) => `
-                    <div class="image-library-item" onclick="loadPhotoFromLibrary(${i});closeImageLibraryModal();">
-                        <img src="${img}"><button class="delete-lib-img" onclick="event.stopPropagation();deletePhotoFromLibrary(${i})">×</button>
-                    </div>
-                `).join('');
-
-            document.getElementById('modalBgGrid').innerHTML = state.bgLibrary.length === 0
-                ? '<p style="color:#888;font-size:11px;">暂无保存的背景</p>'
-                : state.bgLibrary.map((img, i) => `
-                    <div class="image-library-item" onclick="loadBgFromLibrary(${i});closeImageLibraryModal();">
-                        <img src="${img}"><button class="delete-lib-img" onclick="event.stopPropagation();deleteBgFromLibrary(${i})">×</button>
-                    </div>
-                `).join('');
-        }
-
-        // Templates
-        function saveTemplate() {
-            const name = document.getElementById('templateSaveName').value.trim();
-            if (!name) { showToast('请输入模板名称'); return; }
-
-            state.savedTemplates.push({
-                id: Date.now().toString(),
-                name: name,
-                data: {
-                    speakerName: document.getElementById('speakerName').value,
-                    speakerNameEn: document.getElementById('speakerNameEn').value,
-                    speakerTitle: document.getElementById('speakerTitle').value,
-                    achievements: getAchievements(),
-                    photo: state.photo,
-                    template: state.template,
-                    colorScheme: state.colorScheme
-                }
-            });
-            localStorage.setItem('savedTemplates', JSON.stringify(state.savedTemplates));
-            document.getElementById('templateSaveName').value = '';
-            showToast('模板已保存');
-        }
-
-        function loadTemplate(t) {
-            const d = t.data;
-            document.getElementById('speakerName').value = d.speakerName || '';
-            document.getElementById('speakerNameEn').value = d.speakerNameEn || '';
-            document.getElementById('speakerNameEn').dataset.userEdited = 'true';
-            document.getElementById('speakerTitle').value = d.speakerTitle || '';
-
-            document.getElementById('achievementsList').innerHTML = '';
-            if (d.achievements?.length > 0) {
-                d.achievements.forEach(a => addAchievementWithData(a));
-            } else {
-                addAchievementWithData('');
-            }
-
-            if (d.photo) {
-                state.photo = d.photo;
-                document.getElementById('photoPreview').src = d.photo;
-                document.getElementById('photoPreview').style.display = 'block';
-                document.getElementById('uploadText').style.display = 'none';
-            }
-
-            if (d.template) selectTemplate(d.template);
-            if (d.colorScheme) selectColorScheme(d.colorScheme);
-
-            closeTemplatesModal();
-            updatePreview();
-            showToast('模板已加载');
-        }
-
-        function deleteTemplate(id) {
-            state.savedTemplates = state.savedTemplates.filter(t => t.id !== id);
-            localStorage.setItem('savedTemplates', JSON.stringify(state.savedTemplates));
-            openSavedTemplates();
-            showToast('已删除');
-        }
-
-        // Photo
         function handlePhotoUpload(e) {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = ev => {
-                    state.photo = ev.target.result;
-                    document.getElementById('photoPreview').src = state.photo;
-                    document.getElementById('photoPreview').style.display = 'block';
-                    document.getElementById('uploadText').style.display = 'none';
-                    updatePreview();
-                };
-                reader.readAsDataURL(file);
-            }
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                state.photo = ev.target.result;
+                document.getElementById('photoPreviewImg').src = ev.target.result;
+                document.getElementById('photoPreviewImg').style.display = 'block';
+                document.getElementById('photoPlaceholder').style.display = 'none';
+                updatePreview();
+            };
+            reader.readAsDataURL(file);
         }
 
-        function updatePhotoPos() {
-            state.photoPos.x = document.getElementById('photoPosX').value;
-            state.photoPos.y = document.getElementById('photoPosY').value;
-            state.photoPos.size = document.getElementById('photoSize').value;
-            state.photoPos.rotate = document.getElementById('photoRotate').value;
-            document.getElementById('posXVal').textContent = state.photoPos.x;
-            document.getElementById('posYVal').textContent = state.photoPos.y;
-            document.getElementById('sizeVal').textContent = state.photoPos.size;
-            document.getElementById('rotateVal').textContent = state.photoPos.rotate;
-            applyPhotoTransform();
-        }
-
-        function toggleFlipH() {
-            state.flipH = !state.flipH;
-            document.getElementById('flipHBtn').classList.toggle('active', state.flipH);
-            applyPhotoTransform();
-        }
-
-        function toggleFlipV() {
-            state.flipV = !state.flipV;
-            document.getElementById('flipVBtn').classList.toggle('active', state.flipV);
-            applyPhotoTransform();
-        }
-
-        function applyPhotoTransform() {
-            const photo = document.getElementById('posterPhoto');
-            const glow = document.getElementById('photoGlow');
-            const scaleX = state.flipH ? -1 : 1;
-            const scaleY = state.flipV ? -1 : 1;
-            const scale = state.photoPos.size / 100;
-            const transform = `translate(${state.photoPos.x - 50}%, ${state.photoPos.y - 50}%) scale(${scale * scaleX}, ${scale * scaleY}) rotate(${state.photoPos.rotate}deg)`;
-            photo.style.transform = transform;
-            // Glow follows photo position
-            glow.style.transform = `translate(${state.photoPos.x - 50}%, ${state.photoPos.y - 50}%) scale(${scale * 1.2})`;
-        }
-
-        function updateLinesPos() {
-            state.linesPos = document.getElementById('linesPosY').value;
-            document.getElementById('linesYVal').textContent = state.linesPos;
-            const lines = document.getElementById('gradientLines');
-            if (lines) {
-                lines.style.bottom = `${state.linesPos}px`;
-            }
-        }
-
-        // Background
-        function handleBgUpload(e) {
+        function handleCustomBgUpload(e) {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = ev => {
-                    state.customBg = ev.target.result;
-                    document.getElementById('bgPreviewImg').src = state.customBg;
-                    document.getElementById('bgPreviewImg').style.display = 'block';
-                    document.getElementById('bgUploadText').style.display = 'none';
-                    document.querySelectorAll('.template-option').forEach(o => o.classList.remove('selected'));
-                    state.template = 'custom';
-                    updatePreview();
-                };
-                reader.readAsDataURL(file);
-            }
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                state.customBg = ev.target.result;
+                document.getElementById('customBgPreview').innerHTML = `<img src="${ev.target.result}">`;
+                updatePreview();
+            };
+            reader.readAsDataURL(file);
         }
 
-        function clearCustomBg() {
-            state.customBg = '';
-            document.getElementById('bgPreviewImg').style.display = 'none';
-            document.getElementById('bgUploadText').style.display = 'block';
-            document.getElementById('bgUpload').value = '';
-            selectTemplate(1);
+        function updateImageControls() {
+            state.photoPosition.x = document.getElementById('photoPositionX').value;
+            state.photoPosition.y = document.getElementById('photoPositionY').value;
+            state.photoScale = document.getElementById('photoScale').value;
+            state.photoRotate = document.getElementById('photoRotate').value;
+            state.photoBrightness = document.getElementById('photoBrightness').value;
+            state.photoContrast = document.getElementById('photoContrast').value;
+            state.photoSaturation = document.getElementById('photoSaturation').value;
+            document.getElementById('posXVal').textContent = state.photoPosition.x + '%';
+            document.getElementById('posYVal').textContent = state.photoPosition.y + '%';
+            document.getElementById('scaleVal').textContent = state.photoScale + '%';
+            document.getElementById('rotateVal').textContent = state.photoRotate + '°';
+            document.getElementById('brightnessVal').textContent = state.photoBrightness + '%';
+            document.getElementById('contrastVal').textContent = state.photoContrast + '%';
+            document.getElementById('saturationVal').textContent = state.photoSaturation + '%';
+            updatePreview();
+        }
+
+        function resetImageControls() {
+            document.getElementById('photoPositionX').value = 50;
+            document.getElementById('photoPositionY').value = 0;
+            document.getElementById('photoScale').value = 100;
+            document.getElementById('photoRotate').value = 0;
+            document.getElementById('photoBrightness').value = 100;
+            document.getElementById('photoContrast').value = 100;
+            document.getElementById('photoSaturation').value = 100;
+            state.flipH = false; state.flipV = false;
+            document.getElementById('flipHBtn').classList.remove('active');
+            document.getElementById('flipVBtn').classList.remove('active');
+            updateImageControls();
+        }
+
+        function toggleFlip(dir) {
+            if (dir === 'h') { state.flipH = !state.flipH; document.getElementById('flipHBtn').classList.toggle('active', state.flipH); }
+            else { state.flipV = !state.flipV; document.getElementById('flipVBtn').classList.toggle('active', state.flipV); }
+            updatePreview();
         }
 
         function selectTemplate(n) {
             state.template = n;
-            state.customBg = '';
-            document.querySelectorAll('.template-option').forEach(o => o.classList.remove('selected'));
-            document.querySelector(`[data-template="${n}"]`)?.classList.add('selected');
-            document.getElementById('bgPreviewImg').style.display = 'none';
-            document.getElementById('bgUploadText').style.display = 'block';
+            document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.template-btn[data-template="${n}"]`)?.classList.add('active');
             updatePreview();
         }
 
         function selectColorScheme(n) {
             state.colorScheme = n;
             document.querySelectorAll('.color-scheme-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector(`[data-scheme="${n}"]`)?.classList.add('active');
+            document.querySelector(`.color-scheme-btn[data-scheme="${n}"]`)?.classList.add('active');
             updatePreview();
         }
 
-        // Dynamic Items
-        function addAchievement() { addAchievementWithData(''); }
-
-        function addAchievementWithData(val) {
-            const list = document.getElementById('achievementsList');
-            const div = document.createElement('div');
-            div.className = 'dynamic-item';
-            div.innerHTML = `<input type="text" value="${val}" placeholder="成就内容" oninput="updatePreview()"><button onclick="removeItem(this)">✕</button>`;
-            list.appendChild(div);
-        }
-
-        function addContentPoint() { addContentPointWithData('', '', ''); }
-
-        function addContentPointWithData(title, titleEn, desc, isFirst = false) {
-            const list = document.getElementById('contentPointsList');
-            const div = document.createElement('div');
-            div.className = 'content-point-item';
-            div.style.cssText = 'background:#f8f9fa;padding:12px;border-radius:10px;margin-bottom:10px;';
-            div.innerHTML = `
-                <div class="form-row">
-                    <div class="form-group" style="margin-bottom:8px;">
-                        <label style="font-size:11px;">标题(中)</label>
-                        <input type="text" class="pt-title" value="${title}" placeholder="要点标题" oninput="onPointTitleInput(this)">
-                    </div>
-                    <div class="form-group" style="margin-bottom:8px;">
-                        <label class="auto-translate-label" style="font-size:11px;">标题(英) <span class="auto-badge">自动</span></label>
-                        <input type="text" class="pt-title-en" value="${titleEn}" placeholder="English" oninput="updatePreview()">
-                    </div>
-                </div>
-                <div class="form-group" style="margin-bottom:8px;">
-                    <label style="font-size:11px;">描述</label>
-                    <input type="text" class="pt-desc" value="${desc}" placeholder="简短描述" oninput="updatePreview()">
-                </div>
-                <button class="add-btn" onclick="removeItem(this.parentElement)" style="background:linear-gradient(135deg,#e74c3c,#c0392b);padding:6px 12px;font-size:10px;margin-top:0;">删除</button>
-            `;
-            list.appendChild(div);
-            if (!isFirst) updatePreview();
-        }
-
-        function onPointTitleInput(el) {
-            const container = el.closest('.content-point-item');
-            const enField = container.querySelector('.pt-title-en');
-            const cn = el.value;
-            if (cn && !enField.dataset.userEdited) {
-                const translated = translateText(cn);
-                if (translated) enField.value = translated;
-            }
+        async function onChineseNameInput() {
+            const cn = document.getElementById('speakerName').value;
+            const en = document.getElementById('speakerNameEn');
+            if (cn && !en.dataset.userEdited) { const t = translateName(cn); if (t) en.value = t; }
             updatePreview();
         }
 
-        function removeItem(el) {
-            el.remove();
+        async function onMainTitleInput() {
+            const cn = document.getElementById('mainTitle').value;
+            const en = document.getElementById('mainTitleEn');
+            if (cn && !en.dataset.userEdited) { const t = translateTextLocal(cn); if (t) en.value = t; }
             updatePreview();
         }
 
-        function getAchievements() {
-            return Array.from(document.querySelectorAll('#achievementsList input')).map(i => i.value).filter(v => v.trim());
+        async function onSubtitleInput() {
+            const cn = document.getElementById('subtitle').value;
+            const en = document.getElementById('subtitleEn');
+            if (cn && !en.dataset.userEdited) { const t = translateTextLocal(cn); if (t) en.value = t; }
+            updatePreview();
         }
 
-        function getContentPoints() {
-            return Array.from(document.querySelectorAll('.content-point-item')).map(item => ({
-                title: item.querySelector('.pt-title')?.value || '',
-                titleEn: item.querySelector('.pt-title-en')?.value || '',
-                desc: item.querySelector('.pt-desc')?.value || ''
-            })).filter(p => p.title || p.desc);
-        }
-
-        // Timezone
-        function convertTimezone(time) {
-            const [h, m] = time.split(':').map(Number);
-            const pad = n => n.toString().padStart(2, '0');
-            const caTime = `${pad(h)}:${pad(m)}`;
-            let nyH = h + 3; if (nyH >= 24) nyH -= 24;
-            const nyTime = `${pad(nyH)}:${pad(m)}`;
-            let bjH = h + 16; if (bjH >= 24) bjH -= 24;
-            const bjTime = `${pad(bjH)}:${pad(m)}`;
-            return { ca: caTime, ny: nyTime, bj: bjTime };
-        }
-
-        // Update Preview
+        // ============ PREVIEW UPDATE ============
         function updatePreview() {
-            const name = document.getElementById('speakerName').value || '范凯文';
-            const nameEn = document.getElementById('speakerNameEn').value || 'Kevin Fan';
-            const title = document.getElementById('speakerTitle').value || '多年行业实战导师 | 团队领航人';
-            const badge = document.getElementById('badgeText').value || '专业培训';
-            const mainTitle = document.getElementById('mainTitle').value || '成功宝典';
-            const mainTitleEn = document.getElementById('mainTitleEn').value || 'SUCCESS SECRETS';
-            const subtitle = document.getElementById('subtitle').value || '新人必修课';
-            const subtitleEn = document.getElementById('subtitleEn').value || 'Essential Course';
-            const meetingDate = document.getElementById('meetingDate').value;
-            const meetingTime = document.getElementById('meetingTime').value || '18:00';
-            const topic = document.getElementById('meetingTopic').value || 'How to close a policy';
-            const platform = document.getElementById('meetingPlatform').value || 'Zoom Online Meeting';
-            const zoomLink = document.getElementById('zoomLink').value || '';
-            const meetingId = document.getElementById('meetingId').value || '';
-            const teamName = document.getElementById('teamName').value || 'Hengsheng Team';
-            const highlight = document.getElementById('courseHighlight').value || '';
-
+            const scheme = colorSchemes[state.colorScheme];
             const poster = document.getElementById('posterPreview');
-            const bg = document.getElementById('posterBg');
-            const decor = document.getElementById('bgDecorLayer');
+            const speakerName = document.getElementById('speakerName').value || 'Lisa Yao';
+            const speakerNameEn = document.getElementById('speakerNameEn').value || 'Lisa Yao';
+            const speakerTitle = document.getElementById('speakerTitle').value || '资深行业导师';
+            const badge = document.getElementById('badge').value || '限时直播';
+            const mainTitle = document.getElementById('mainTitle').value || '销售成功秘籍';
+            const mainTitleEn = document.getElementById('mainTitleEn').value || 'SALES SUCCESS TIPS';
+            const subtitle = document.getElementById('subtitle').value || '';
+            const subtitleEn = document.getElementById('subtitleEn').value || '';
+            const brandName = document.getElementById('brandName').value || 'HENGSHENG';
+            const brandTagline = document.getElementById('brandTagline').value || '共创财富 · 成就未来';
+            const achievements = [], points = [];
+            document.querySelectorAll('#achievementsList input').forEach(i => { if (i.value.trim()) achievements.push(i.value.trim()); });
+            document.querySelectorAll('#pointsList input').forEach(i => { if (i.value.trim()) points.push(i.value.trim()); });
 
-            let templateClass = state.template === 'custom' ? 'template-custom' : `template-${state.template}`;
-            let schemeClass = state.template === 6 ? '' : `scheme-${state.colorScheme}`;
-            poster.className = `poster ${templateClass} ${schemeClass}`;
-
-            if (state.customBg) {
-                bg.style.backgroundImage = `url(${state.customBg})`;
-                decor.innerHTML = '';
-            } else {
-                bg.style.backgroundImage = '';
-                decor.innerHTML = '<div class="bg-accent"></div><div class="bg-accent-2"></div>';
+            const meetingDate = document.getElementById('meetingDate').value;
+            const meetingTime = document.getElementById('meetingTime').value;
+            const zoomId = document.getElementById('zoomId').value;
+            let timeDisplay = '';
+            if (meetingDate && meetingTime) {
+                const dt = new Date(meetingDate + 'T' + meetingTime);
+                const caTime = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                const bjHour = (dt.getHours() + 16) % 24;
+                const nyHour = (dt.getHours() + 3) % 24;
+                const dateStr = dt.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' });
+                timeDisplay = `${dateStr} | 加州 ${caTime} | 北京 ${bjHour}:${String(dt.getMinutes()).padStart(2,'0')}`;
             }
 
-            document.getElementById('posterBadge').textContent = badge;
-            document.getElementById('posterMainTitle').textContent = mainTitle;
-            document.getElementById('posterMainTitleEn').textContent = mainTitleEn;
-            document.getElementById('posterSubtitle').textContent = subtitle;
-            document.getElementById('posterSubtitleEn').textContent = subtitleEn;
-            document.getElementById('posterSpeakerName').textContent = name;
-            document.getElementById('posterSpeakerNameEn').textContent = nameEn;
-            document.getElementById('posterSpeakerTitle').textContent = title;
-            document.getElementById('posterPlatform').textContent = platform;
+            let bgStyle = state.customBg ? `background-image: url(${state.customBg});` :
+                `background: ${['linear-gradient(135deg, #1a1a2e, #16213e)', 'linear-gradient(135deg, #0d2137, #1a365d)', 'linear-gradient(135deg, #1a0a2e, #2d1b4e)', 'linear-gradient(135deg, #0a1a2e, #1a3a5c)', 'linear-gradient(135deg, #1a2e1a, #2d4a2d)', 'linear-gradient(135deg, #2e1a1a, #4a2d2d)'][state.template - 1]};`;
 
-            const photoEl = document.getElementById('posterPhoto');
-            if (state.photo) {
-                photoEl.src = state.photo;
-            } else {
-                photoEl.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='200' viewBox='0 0 150 200'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%231a1a2e' stop-opacity='0.3'/%3E%3Cstop offset='100%25' stop-color='%230a0f1a' stop-opacity='0.6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='150' height='200' rx='10'/%3E%3Ctext x='75' y='95' text-anchor='middle' fill='%23d4af37' font-size='11'%3E上传照片%3C/text%3E%3Ctext x='75' y='112' text-anchor='middle' fill='%23666' font-size='9'%3EUpload Photo%3C/text%3E%3C/svg%3E";
-            }
-            applyPhotoTransform();
+            let photoTransform = `scale(${state.photoScale/100}) rotate(${state.photoRotate}deg)`;
+            if (state.flipH) photoTransform += ' scaleX(-1)';
+            if (state.flipV) photoTransform += ' scaleY(-1)';
+            const photoFilter = `brightness(${state.photoBrightness}%) contrast(${state.photoContrast}%) saturate(${state.photoSaturation}%)`;
 
-            const points = getContentPoints();
-            document.getElementById('posterContentPoints').innerHTML = points.map((p, i) => `
-                <div class="content-point">
-                    <div class="point-marker">${i + 1}</div>
-                    <div class="point-text">
-                        <div class="point-title">${p.title}</div>
-                        <div class="point-title-en">${p.titleEn}</div>
-                        <p class="point-desc">${p.desc}</p>
+            const photoHtml = state.photo ?
+                `<img src="${state.photo}" class="speaker-photo" style="object-position: ${state.photoPosition.x}% ${state.photoPosition.y}%; transform: ${photoTransform}; filter: ${photoFilter};">` :
+                `<div class="speaker-photo" style="background: linear-gradient(135deg, ${scheme.accent}40, ${scheme.accent}20); display: flex; align-items: center; justify-content: center; font-size: 4vmin;">📷</div>`;
+
+            poster.innerHTML = `
+                <div class="poster-bg" style="${bgStyle}"></div>
+                <div class="poster-overlay" style="background: ${scheme.gradient}"></div>
+                <div class="poster-content">
+                    <div class="poster-badge" style="background: ${scheme.accent}; color: ${scheme.primary};">${badge}</div>
+                    <div class="poster-titles">
+                        <div class="poster-main-title" style="color: ${scheme.accent};">${mainTitle}</div>
+                        <div class="poster-main-title-en">${mainTitleEn}</div>
+                        ${subtitle ? `<div class="poster-subtitle">${subtitle}</div>` : ''}
+                        ${subtitleEn ? `<div class="poster-subtitle-en">${subtitleEn}</div>` : ''}
                     </div>
-                </div>
-            `).join('');
-
-            const times = convertTimezone(meetingTime);
-            let dateDisplay = '--/--', dateStr = '', dateEn = '';
-            if (meetingDate) {
-                const d = new Date(meetingDate + 'T12:00:00');
-                const mm = (d.getMonth() + 1).toString().padStart(2, '0');
-                const dd = d.getDate().toString().padStart(2, '0');
-                dateDisplay = `${mm}/${dd}`;
-                const wk = ['日','一','二','三','四','五','六'];
-                dateStr = `${mm}月${dd}日（周${wk[d.getDay()]}）`;
-                const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-                dateEn = `${mo[d.getMonth()]} ${dd}, ${d.getFullYear()}`;
-            }
-            document.getElementById('posterMeetingDate').textContent = dateDisplay;
-            document.getElementById('posterTimezone').textContent = `加州 ${times.ca} | 北京 ${times.bj} | 纽约 ${times.ny}`;
-
-            const achievements = getAchievements();
-            let achText = achievements.map(a => `·${a}`).join('\n');
-
-            document.getElementById('textNotification').textContent = `📢 ${teamName} 培训通知
-🗓 时间：${dateStr}
-⏰ 加州时间 ${times.ca} | 北京时间 ${times.bj} | 纽约时间 ${times.ny}
-❤️ 主题：${topic}
-💡 课程亮点：
-${highlight}
-🌹 讲师介绍: ${name} (${nameEn})
-${title}
-${achText}
-📎 链接如下：
-Topic: ${nameEn}: ${topic}
-Time: ${dateEn} ${meetingTime} Pacific Time
-Join Zoom Meeting
-${zoomLink}
-Meeting ID: ${meetingId}`;
+                    <div class="poster-speaker">
+                        <div class="speaker-photo-container">${photoHtml}</div>
+                        <div class="speaker-info">
+                            <div class="speaker-name-cn" style="color: ${scheme.accent};">${speakerName}</div>
+                            <div class="speaker-name-en">${speakerNameEn}</div>
+                            <div class="speaker-title">${speakerTitle}</div>
+                            <ul class="speaker-achievements">${achievements.map(a => `<li>${a}</li>`).join('')}</ul>
+                        </div>
+                    </div>
+                    ${points.length ? `<div class="poster-points">${points.map((p,i) => `<div class="poster-point"><div class="point-icon" style="background:${scheme.accent};color:${scheme.primary};">${i+1}</div><div class="point-text">${p}</div></div>`).join('')}</div>` : ''}
+                    <div class="poster-meeting-info">
+                        ${timeDisplay ? `<div class="meeting-row"><span class="meeting-icon">📅</span><span class="meeting-value">${timeDisplay}</span></div>` : ''}
+                        ${zoomId ? `<div class="meeting-row"><span class="meeting-icon">🔗</span><span class="meeting-label">Zoom ID:</span><span class="meeting-value">${zoomId}</span></div>` : ''}
+                    </div>
+                    <div class="poster-footer">
+                        <div class="poster-logo" style="color: ${scheme.accent};">${brandName}</div>
+                        <div class="poster-tagline">${brandTagline}</div>
+                    </div>
+                </div>`;
         }
 
-        // Actions
-        async function downloadPoster() {
+        // ============ EXPORT FUNCTIONS ============
+        async function downloadPoster(width = 1080, height = 1920) {
+            showLoading('生成海报中...');
             try {
-                const canvas = await html2canvas(document.getElementById('posterPreview'), {
-                    scale: 2, useCORS: true, backgroundColor: null, logging: false
-                });
+                const poster = document.getElementById('posterPreview');
+                const canvas = await html2canvas(poster, { scale: 3, useCORS: true, allowTaint: true, backgroundColor: null });
+                const resizedCanvas = document.createElement('canvas');
+                resizedCanvas.width = width; resizedCanvas.height = height;
+                const ctx = resizedCanvas.getContext('2d');
+                ctx.drawImage(canvas, 0, 0, width, height);
                 const link = document.createElement('a');
-                link.download = `hengsheng-poster-${Date.now()}.png`;
-                link.href = canvas.toDataURL('image/png');
+                link.download = `海报_${document.getElementById('mainTitle').value || 'poster'}_${width}x${height}.png`;
+                link.href = resizedCanvas.toDataURL('image/png');
                 link.click();
-                showToast('下载成功!');
-            } catch (e) {
-                console.error(e);
-                showToast('下载失败');
+                hideLoading();
+                showToast('下载成功！', 'success');
+                await saveToHistory();
+            } catch (e) { hideLoading(); showToast('下载失败', 'error'); }
+        }
+
+        async function batchExport() {
+            const selected = document.querySelectorAll('.batch-option.selected');
+            if (!selected.length) { showToast('请选择至少一个尺寸', 'error'); return; }
+            showLoading('批量导出中...');
+            for (let opt of selected) {
+                const [w, h] = opt.dataset.size.split('x').map(Number);
+                await downloadPoster(w, h);
+                await new Promise(r => setTimeout(r, 500));
             }
+            hideLoading();
+            showToast(`已导出 ${selected.length} 个文件`, 'success');
         }
 
-        function copyText() {
-            const text = document.getElementById('textNotification').textContent;
-            navigator.clipboard.writeText(text).then(() => showToast('已复制!')).catch(() => {
-                const ta = document.createElement('textarea');
-                ta.value = text;
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                document.body.removeChild(ta);
-                showToast('已复制!');
-            });
+        function copyNotification() {
+            const text = `📢 直播预告\n\n【${document.getElementById('mainTitle').value || '销售成功秘籍'}】\n\n🎤 主讲：${document.getElementById('speakerName').value || 'Lisa Yao'}\n📅 时间：${document.getElementById('meetingDate').value} ${document.getElementById('meetingTime').value} (加州)\n${document.getElementById('zoomId').value ? '🔗 Zoom ID: ' + document.getElementById('zoomId').value : ''}\n\n期待您的参与！`;
+            navigator.clipboard.writeText(text).then(() => showToast('已复制', 'success')).catch(() => showToast('复制失败', 'error'));
         }
 
-        function sendEmail() {
-            const text = document.getElementById('textNotification').textContent;
-            const team = document.getElementById('teamName').value || 'Hengsheng Team';
-            window.location.href = `mailto:?subject=${encodeURIComponent(team + ' 培训通知')}&body=${encodeURIComponent(text)}`;
+        function openEmailClient() {
+            const subject = encodeURIComponent(`直播预告：${document.getElementById('mainTitle').value || ''}`);
+            const body = encodeURIComponent(`您好，\n\n诚邀您参加【${document.getElementById('mainTitle').value}】直播。\n\n详情见海报。`);
+            window.open(`mailto:?subject=${subject}&body=${body}`);
         }
 
-        // Modals
-        function openSpeakerLibrary() {
+        // ============ MODALS ============
+        async function openSpeakerLibrary() {
+            document.getElementById('speakerModal').classList.add('show');
             const list = document.getElementById('speakerLibraryList');
-            const speakers = Object.entries(state.speakerLibrary);
-            list.innerHTML = speakers.length === 0
-                ? '<p style="color:#888;text-align:center;padding:20px;">讲师库为空</p>'
-                : speakers.map(([id, s]) => `
-                    <div class="speaker-library-item">
-                        <img src="${s.photo || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect fill='%23ddd' width='50' height='50' rx='8'/%3E%3Ctext x='25' y='30' text-anchor='middle' fill='%23999' font-size='8'%3E照片%3C/text%3E%3C/svg%3E"}">
-                        <div class="info">
-                            <h4>${s.name} ${s.nameEn ? `(${s.nameEn})` : ''}</h4>
-                            <p>${s.title || ''}</p>
-                        </div>
-                        <div class="item-actions">
-                            <button class="load-btn" onclick="loadSpeaker('${id}');closeSpeakerModal();">加载</button>
-                            <button class="delete-btn" onclick="deleteSpeaker('${id}')">删除</button>
-                        </div>
-                    </div>
-                `).join('');
-            document.getElementById('speakerModal').style.display = 'flex';
+            let html = '';
+            Object.entries(defaultSpeakers).forEach(([id, s]) => {
+                html += `<div class="speaker-library-item" onclick="quickFill('${id}');closeModal('speakerModal');">
+                    <div class="speaker-library-photo" style="background:linear-gradient(135deg,#d4af37,#f4d03f);display:flex;align-items:center;justify-content:center;">👤</div>
+                    <div class="speaker-library-info"><div class="speaker-library-name">${s.name}</div><div class="speaker-library-title">${s.title.substring(0,25)}...</div></div>
+                </div>`;
+            });
+            if (currentUser) {
+                const snap = await db.collection('users').doc(currentUser.uid).collection('speakers').get();
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    html += `<div class="speaker-library-item" onclick="loadSpeakerFromDb('${doc.id}');closeModal('speakerModal');">
+                        <div class="speaker-library-photo" style="${d.photo ? 'background-image:url('+d.photo+')' : 'background:#ddd'}"></div>
+                        <div class="speaker-library-info"><div class="speaker-library-name">${d.name}</div><div class="speaker-library-title">${(d.title||'').substring(0,25)}</div></div>
+                    </div>`;
+                });
+            }
+            list.innerHTML = html || '<div style="padding:20px;text-align:center;color:#888;">暂无讲师</div>';
         }
 
-        function closeSpeakerModal() { document.getElementById('speakerModal').style.display = 'none'; }
-
-        function openImageLibrary() {
-            updateModalLibraryGrids();
-            document.getElementById('imageLibraryModal').style.display = 'flex';
+        async function loadSpeakerFromDb(docId) {
+            if (!currentUser) return;
+            const doc = await db.collection('users').doc(currentUser.uid).collection('speakers').doc(docId).get();
+            if (!doc.exists) return;
+            const d = doc.data();
+            document.getElementById('speakerName').value = d.nameCn || '';
+            document.getElementById('speakerNameEn').value = d.nameEn || '';
+            document.getElementById('speakerTitle').value = d.title || '';
+            document.getElementById('achievementsList').innerHTML = '';
+            (d.achievements || []).forEach(a => addAchievement(a));
+            if (d.photo) { state.photo = d.photo; document.getElementById('photoPreviewImg').src = d.photo; document.getElementById('photoPreviewImg').style.display = 'block'; document.getElementById('photoPlaceholder').style.display = 'none'; }
+            updatePreview();
         }
 
-        function closeImageLibraryModal() { document.getElementById('imageLibraryModal').style.display = 'none'; }
-
-        function openSavedTemplates() {
-            const list = document.getElementById('savedTemplatesList');
-            list.innerHTML = state.savedTemplates.length === 0
-                ? '<p style="color:#888;text-align:center;padding:20px;">暂无保存的模板</p>'
-                : state.savedTemplates.map(t => `
-                    <div class="speaker-library-item">
-                        <div class="info" style="flex:1;">
-                            <h4>${t.name}</h4>
-                            <p>${t.data.speakerName || ''}</p>
-                        </div>
-                        <div class="item-actions">
-                            <button class="load-btn" onclick='loadTemplate(${JSON.stringify(t).replace(/'/g, "&#39;")})'>加载</button>
-                            <button class="delete-btn" onclick="deleteTemplate('${t.id}')">删除</button>
-                        </div>
-                    </div>
-                `).join('');
-            document.getElementById('templatesModal').style.display = 'flex';
+        async function openTemplateLibrary() {
+            document.getElementById('templateModal').classList.add('show');
+            const list = document.getElementById('templateLibraryList');
+            if (!currentUser) { list.innerHTML = '<div style="padding:20px;text-align:center;color:#888;">请先登录</div>'; return; }
+            const snap = await db.collection('users').doc(currentUser.uid).collection('templates').orderBy('createdAt', 'desc').get();
+            let html = '';
+            snap.forEach(doc => {
+                const d = doc.data();
+                html += `<div class="speaker-library-item" onclick="loadTemplateFromDb('${doc.id}');closeModal('templateModal');">
+                    <div class="speaker-library-photo" style="background:linear-gradient(135deg,#1a1a2e,#d4af37);"></div>
+                    <div class="speaker-library-info"><div class="speaker-library-name">${d.name}</div><div class="speaker-library-title">${d.content?.mainTitle || ''}</div></div>
+                </div>`;
+            });
+            list.innerHTML = html || '<div style="padding:20px;text-align:center;color:#888;">暂无模板</div>';
         }
 
-        function closeTemplatesModal() { document.getElementById('templatesModal').style.display = 'none'; }
-
-        // Toast
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2500);
+        async function loadTemplateFromDb(docId) {
+            if (!currentUser) return;
+            const doc = await db.collection('users').doc(currentUser.uid).collection('templates').doc(docId).get();
+            if (!doc.exists) return;
+            const d = doc.data();
+            if (d.speaker) { document.getElementById('speakerName').value = d.speaker.nameCn || ''; document.getElementById('speakerNameEn').value = d.speaker.nameEn || ''; document.getElementById('speakerTitle').value = d.speaker.title || ''; document.getElementById('achievementsList').innerHTML = ''; (d.speaker.achievements || []).forEach(a => addAchievement(a)); if (d.speaker.photo) { state.photo = d.speaker.photo; document.getElementById('photoPreviewImg').src = d.speaker.photo; document.getElementById('photoPreviewImg').style.display = 'block'; document.getElementById('photoPlaceholder').style.display = 'none'; } }
+            if (d.content) { document.getElementById('badge').value = d.content.badge || ''; document.getElementById('mainTitle').value = d.content.mainTitle || ''; document.getElementById('mainTitleEn').value = d.content.mainTitleEn || ''; document.getElementById('subtitle').value = d.content.subtitle || ''; document.getElementById('subtitleEn').value = d.content.subtitleEn || ''; document.getElementById('pointsList').innerHTML = ''; (d.content.points || []).forEach(p => addPoint(p)); }
+            if (d.meeting) { document.getElementById('meetingDate').value = d.meeting.date || ''; document.getElementById('meetingTime').value = d.meeting.time || ''; }
+            if (d.design) { selectTemplate(d.design.template || 1); selectColorScheme(d.design.colorScheme || 1); if (d.design.customBg) { state.customBg = d.design.customBg; document.getElementById('customBgPreview').innerHTML = `<img src="${d.design.customBg}">`; } }
+            if (d.brand) { document.getElementById('brandName').value = d.brand.name || 'HENGSHENG'; document.getElementById('brandTagline').value = d.brand.tagline || ''; }
+            updatePreview();
+            showToast('模板已加载', 'success');
         }
 
-        // Modal close on overlay click
-        document.getElementById('speakerModal').onclick = e => { if (e.target.id === 'speakerModal') closeSpeakerModal(); };
-        document.getElementById('templatesModal').onclick = e => { if (e.target.id === 'templatesModal') closeTemplatesModal(); };
-        document.getElementById('imageLibraryModal').onclick = e => { if (e.target.id === 'imageLibraryModal') closeImageLibraryModal(); };
+        function openApiSettings() { document.getElementById('apiModal').classList.add('show'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+        // ============ UTILITIES ============
+        function showToast(msg, type = '') { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show ' + type; setTimeout(() => t.classList.remove('show'), 3000); }
+        function showLoading(msg = '加载中...') { document.getElementById('loadingText').textContent = msg; document.getElementById('loadingOverlay').classList.add('show'); }
+        function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+
+        // ============ INIT ============
+        function initUI() {
+            const tg = document.getElementById('templateGrid');
+            for (let i = 1; i <= 6; i++) {
+                const b = document.createElement('div');
+                b.className = 'template-btn' + (i === 1 ? ' active' : '');
+                b.dataset.template = i;
+                b.style.background = ['linear-gradient(135deg,#1a1a2e,#d4af37)', 'linear-gradient(135deg,#0d2137,#c9a227)', 'linear-gradient(135deg,#1a0a2e,#9b59b6)', 'linear-gradient(135deg,#0a1a2e,#3498db)', 'linear-gradient(135deg,#1a2e1a,#27ae60)', 'linear-gradient(135deg,#2e1a1a,#e74c3c)'][i-1];
+                b.innerHTML = `<span>模板${i}</span>`;
+                b.onclick = () => selectTemplate(i);
+                tg.appendChild(b);
+            }
+            const cs = document.getElementById('colorSchemes');
+            for (let i = 1; i <= 5; i++) {
+                const b = document.createElement('div');
+                b.className = 'color-scheme-btn' + (i === 1 ? ' active' : '');
+                b.dataset.scheme = i;
+                b.onclick = () => selectColorScheme(i);
+                cs.appendChild(b);
+            }
+            const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('meetingDate').value = tomorrow.toISOString().split('T')[0];
+            document.getElementById('meetingTime').value = '19:00';
+            ['speakerNameEn', 'mainTitleEn', 'subtitleEn'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', function() { this.dataset.userEdited = 'true'; });
+            });
+            document.querySelectorAll('.batch-option').forEach(opt => {
+                opt.onclick = () => opt.classList.toggle('selected');
+            });
+            updatePreview();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('loadingOverlay').classList.add('show');
+            auth.onAuthStateChanged(async user => {
+                document.getElementById('loadingOverlay').classList.remove('show');
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('authScreen').style.display = 'none';
+                    document.getElementById('appContainer').style.display = 'block';
+                    document.getElementById('userEmail').textContent = user.email;
+                    initUI();
+                    await loadUserData();
+                } else {
+                    currentUser = null;
+                    document.getElementById('authScreen').style.display = 'flex';
+                    document.getElementById('appContainer').style.display = 'none';
+                }
+            });
+        });
+
+        document.querySelectorAll('.modal-overlay').forEach(m => { m.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('show'); }); });
     </script>
 </body>
 </html>
