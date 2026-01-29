@@ -31,19 +31,18 @@
         .auth-error, .auth-success { padding: 12px; border-radius: 10px; margin-bottom: 15px; font-size: 14px; display: none; }
         .auth-error.show { display: block; background: #fee; color: #c00; border: 1px solid #fcc; }
         .auth-success.show { display: block; background: #efe; color: #080; border: 1px solid #cfc; }
-        .auth-box input { width: 100%; padding: 16px 20px; border: 2px solid #e8e8e8; border-radius: 12px; font-size: 16px; margin-bottom: 15px; transition: all 0.3s; }
+        .auth-box input { width: 100%; padding: 16px 20px; border: 2px solid #e8e8e8; border-radius: 12px; font-size: 16px; margin-bottom: 15px; }
         .auth-box input:focus { outline: none; border-color: #d4af37; }
-        .auth-box button.auth-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #d4af37, #f4d03f); border: none; border-radius: 12px; color: #1a1a2e; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Montserrat', sans-serif; letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s; margin-bottom: 15px; }
-        .auth-box button.auth-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(212,175,55,0.4); }
-        .auth-box button.auth-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .auth-box button.auth-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #d4af37, #f4d03f); border: none; border-radius: 12px; color: #1a1a2e; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 15px; }
+        .auth-box button.auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .auth-link { color: #d4af37; text-decoration: none; font-size: 14px; cursor: pointer; }
 
         .app-container { display: none; min-height: 100vh; }
         .app-header { background: linear-gradient(135deg, #d4af37, #f4d03f); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 100; }
         .app-header h1 { font-family: 'Montserrat', sans-serif; font-weight: 800; color: #1a1a2e; font-size: 16px; }
-        .header-user { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #1a1a2e; }
+        .header-user { font-size: 13px; color: #1a1a2e; }
         .header-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
-        .header-btn { padding: 8px 16px; border: 2px solid #1a1a2e; background: transparent; color: #1a1a2e; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.2s; }
+        .header-btn { padding: 8px 16px; border: 2px solid #1a1a2e; background: transparent; color: #1a1a2e; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; }
         .header-btn:hover { background: #1a1a2e; color: #d4af37; }
         .header-btn.logout-btn { border-color: #c00; color: #c00; }
         .header-btn.logout-btn:hover { background: #c00; color: #fff; }
@@ -54,7 +53,7 @@
         .form-section::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 3px; }
 
         .tab-container { display: flex; gap: 4px; margin-bottom: 20px; background: #f5f5f5; padding: 4px; border-radius: 12px; }
-        .tab-btn { flex: 1; padding: 10px 6px; border: none; background: transparent; color: #888; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; transition: all 0.2s; }
+        .tab-btn { flex: 1; padding: 10px 6px; border: none; background: transparent; color: #888; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; }
         .tab-btn.active { background: #1a1a2e; color: #d4af37; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -63,122 +62,103 @@
         .form-section-title:first-child { margin-top: 0; }
         .form-group { margin-bottom: 14px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #444; font-size: 12px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 11px 14px; border: 2px solid #e8e8e8; border-radius: 10px; font-size: 14px; transition: all 0.3s; font-family: 'Noto Sans SC', sans-serif; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 11px 14px; border: 2px solid #e8e8e8; border-radius: 10px; font-size: 14px; font-family: 'Noto Sans SC', sans-serif; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #d4af37; }
         .form-group textarea { resize: vertical; min-height: 65px; }
         .form-row { display: flex; gap: 10px; }
         .form-row .form-group { flex: 1; }
         .form-hint { font-size: 11px; color: #888; margin-top: 4px; }
-
-        .auto-translate-label { display: flex; align-items: center; justify-content: space-between; }
-        .auto-badge { background: #e3f2fd; color: #1976d2; padding: 2px 8px; border-radius: 10px; font-size: 9px; font-weight: 600; }
-        .api-badge { background: #fff3e0; color: #e65100; }
+        .auto-badge { background: #e3f2fd; color: #1976d2; padding: 2px 8px; border-radius: 10px; font-size: 9px; font-weight: 600; margin-left: 8px; }
 
         .quick-fill-section { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border: 2px solid #4caf50; border-radius: 12px; padding: 15px; margin-bottom: 20px; }
         .quick-fill-section h4 { font-size: 13px; color: #2e7d32; margin-bottom: 10px; }
         .quick-fill-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-        .quick-fill-btn { padding: 8px 14px; background: #4caf50; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s; }
-        .quick-fill-btn:hover { background: #388e3c; }
+        .quick-fill-btn { padding: 8px 14px; background: #4caf50; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
 
         .speaker-select-container { display: flex; gap: 8px; margin-bottom: 12px; }
         .speaker-select-container select { flex: 1; }
         .speaker-select-container button { padding: 11px 14px; background: #1a1a2e; color: #d4af37; border: none; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 600; }
 
-        /* Photo Upload Area */
-        .photo-upload-area { width: 100%; height: 160px; border: 3px dashed #d4af37; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s; background: linear-gradient(135deg, #fffbeb, #fff9e6); overflow: hidden; position: relative; }
-        .photo-upload-area:hover { background: linear-gradient(135deg, #fff5d6, #fff3cc); }
-        .photo-upload-area img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .photo-upload-area .upload-text { text-align: center; color: #b8960c; font-weight: 600; font-size: 13px; }
-        .photo-upload-area .upload-text span { display: block; font-size: 36px; margin-bottom: 8px; }
+        .photo-upload-area { width: 100%; height: 180px; border: 3px dashed #d4af37; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; background: linear-gradient(135deg, #fffbeb, #fff9e6); overflow: hidden; position: relative; }
+        .photo-upload-area img { width: 100%; height: 100%; object-fit: contain; }
+        .photo-upload-area .upload-text { text-align: center; color: #b8960c; font-weight: 600; }
+        .photo-upload-area .upload-text span { display: block; font-size: 40px; margin-bottom: 8px; }
 
-        /* Enhanced Image Controls */
         .image-controls { background: #f8f9fa; border-radius: 12px; padding: 15px; margin-top: 12px; }
-        .image-controls h5 { font-size: 12px; color: #333; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .image-controls h5 { font-size: 12px; color: #333; margin-bottom: 12px; }
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .control-item { display: flex; flex-direction: column; gap: 4px; }
         .control-item.full { grid-column: 1 / -1; }
         .control-item label { font-size: 11px; color: #666; display: flex; justify-content: space-between; }
-        .control-item input[type="range"] { width: 100%; height: 6px; border-radius: 3px; background: #e0e0e0; -webkit-appearance: none; }
+        .control-item input[type="range"] { width: 100%; height: 6px; border-radius: 3px; background: #e0e0e0; -webkit-appearance: none; cursor: pointer; }
         .control-item input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #d4af37; cursor: pointer; }
-
         .image-action-btns { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
-        .image-action-btn { flex: 1; min-width: 80px; padding: 8px; border: 2px solid #e0e0e0; background: #fff; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .image-action-btn { flex: 1; min-width: 70px; padding: 8px; border: 2px solid #e0e0e0; background: #fff; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; text-align: center; }
         .image-action-btn:hover { border-color: #d4af37; background: #fffbeb; }
         .image-action-btn.active { border-color: #d4af37; background: #d4af37; color: #1a1a2e; }
         .image-action-btn.removebg { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; }
-        .image-action-btn.removebg:hover { opacity: 0.9; }
 
-        /* AI Translation Section */
         .ai-translate-section { background: linear-gradient(135deg, #e3f2fd, #bbdefb); border: 2px solid #2196f3; border-radius: 12px; padding: 12px; margin-top: 10px; }
-        .ai-translate-section h5 { font-size: 12px; color: #1565c0; margin-bottom: 8px; }
         .ai-translate-btn { width: 100%; padding: 10px; background: #2196f3; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .ai-translate-btn:hover { background: #1976d2; }
-        .ai-translate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        /* Batch Export */
         .batch-export-section { background: linear-gradient(135deg, #fce4ec, #f8bbd9); border: 2px solid #e91e63; border-radius: 12px; padding: 15px; margin-top: 15px; }
         .batch-export-section h4 { font-size: 13px; color: #c2185b; margin-bottom: 10px; }
         .batch-options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-        .batch-option { padding: 8px 12px; background: white; border: 2px solid #e91e63; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; color: #c2185b; transition: all 0.2s; }
+        .batch-option { padding: 8px 12px; background: white; border: 2px solid #e91e63; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; color: #c2185b; }
         .batch-option.selected { background: #e91e63; color: white; }
         .batch-export-btn { width: 100%; padding: 12px; background: #e91e63; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; }
-        .batch-export-btn:hover { background: #c2185b; }
 
-        /* Preview Section */
         .preview-section { flex: 1; min-width: 400px; display: flex; flex-direction: column; align-items: center; }
         .preview-container { position: relative; width: 100%; max-width: 450px; }
         .poster-preview { width: 100%; aspect-ratio: 9/16; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 80px rgba(0,0,0,0.5); position: relative; background: #1a1a2e; }
 
+        /* 海报样式 - 居中对称布局 */
         .poster-bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
         .poster-overlay { position: absolute; inset: 0; }
-        .poster-content { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 5%; color: white; }
-        .poster-badge { display: inline-block; padding: 0.8% 3%; border-radius: 20px; font-size: 2.8vmin; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2%; }
-        .poster-titles { margin-bottom: 3%; }
-        .poster-main-title { font-family: 'Noto Serif SC', serif; font-size: 6vmin; font-weight: 900; line-height: 1.2; margin-bottom: 1%; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
-        .poster-main-title-en { font-family: 'Oswald', sans-serif; font-size: 3.5vmin; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; opacity: 0.9; }
-        .poster-subtitle { font-size: 3.2vmin; margin-top: 2%; opacity: 0.95; font-weight: 500; }
-        .poster-subtitle-en { font-family: 'Montserrat', sans-serif; font-size: 2.2vmin; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; margin-top: 1%; }
+        .poster-content { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 6%; color: white; }
 
-        .poster-speaker { display: flex; align-items: flex-end; gap: 4%; margin: auto 0; padding: 3% 0; }
-        .speaker-photo-container { width: 35%; position: relative; }
-        .speaker-photo { width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: top; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
-        .speaker-info { flex: 1; }
-        .speaker-name-cn { font-family: 'Noto Serif SC', serif; font-size: 5vmin; font-weight: 900; margin-bottom: 1%; }
-        .speaker-name-en { font-family: 'Playfair Display', serif; font-size: 3vmin; font-weight: 600; opacity: 0.9; margin-bottom: 2%; letter-spacing: 2px; }
-        .speaker-title { font-size: 2.2vmin; opacity: 0.85; line-height: 1.5; margin-bottom: 2%; }
-        .speaker-achievements { list-style: none; font-size: 2vmin; opacity: 0.8; }
-        .speaker-achievements li { margin-bottom: 1%; padding-left: 3%; position: relative; }
-        .speaker-achievements li::before { content: '✦'; position: absolute; left: 0; }
+        .poster-header { text-align: center; margin-bottom: 4%; }
+        .poster-badge { display: inline-block; padding: 1% 4%; border-radius: 25px; font-size: 2.5vmin; font-weight: 700; letter-spacing: 2px; }
 
-        .poster-points { margin: 3% 0; }
-        .poster-point { display: flex; align-items: flex-start; gap: 2%; margin-bottom: 2%; font-size: 2.5vmin; }
-        .point-icon { width: 6%; aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2vmin; flex-shrink: 0; }
-        .point-text { flex: 1; line-height: 1.4; }
+        .poster-titles { text-align: center; margin-bottom: 4%; }
+        .poster-main-title { font-family: 'Noto Serif SC', serif; font-size: 7vmin; font-weight: 900; line-height: 1.2; text-shadow: 2px 2px 15px rgba(0,0,0,0.5); }
+        .poster-main-title-en { font-family: 'Oswald', sans-serif; font-size: 3vmin; font-weight: 600; letter-spacing: 4px; opacity: 0.9; margin-top: 1%; }
+        .poster-subtitle { font-size: 3vmin; margin-top: 2%; opacity: 0.9; }
+        .poster-subtitle-en { font-family: 'Montserrat', sans-serif; font-size: 2vmin; letter-spacing: 2px; opacity: 0.8; margin-top: 1%; }
 
-        .poster-meeting-info { margin-top: auto; padding: 3%; border-radius: 15px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
-        .meeting-row { display: flex; align-items: center; gap: 2%; margin-bottom: 1.5%; font-size: 2.3vmin; }
-        .meeting-row:last-child { margin-bottom: 0; }
-        .meeting-icon { width: 5%; opacity: 0.8; }
-        .meeting-label { opacity: 0.7; width: 20%; }
-        .meeting-value { font-weight: 600; }
+        .poster-speaker { display: flex; align-items: center; gap: 5%; margin: auto 0; padding: 4% 0; }
+        .speaker-photo-container { width: 38%; flex-shrink: 0; }
+        .speaker-photo { width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: center top; border-radius: 15px; box-shadow: 0 15px 50px rgba(0,0,0,0.5); background: linear-gradient(135deg, #d4af3740, #d4af3720); }
+        .speaker-info { flex: 1; text-align: left; }
+        .speaker-name-cn { font-family: 'Noto Serif SC', serif; font-size: 5.5vmin; font-weight: 900; margin-bottom: 1%; }
+        .speaker-name-en { font-family: 'Playfair Display', serif; font-size: 2.8vmin; font-weight: 600; opacity: 0.9; margin-bottom: 3%; letter-spacing: 2px; }
+        .speaker-title { font-size: 2.2vmin; opacity: 0.85; line-height: 1.6; }
+        .speaker-achievements { list-style: none; font-size: 1.9vmin; opacity: 0.8; margin-top: 2%; }
+        .speaker-achievements li { margin-bottom: 1%; padding-left: 4%; position: relative; }
+        .speaker-achievements li::before { content: '✦'; position: absolute; left: 0; font-size: 1.5vmin; }
 
-        .poster-footer { margin-top: 3%; text-align: center; padding-top: 2%; border-top: 1px solid rgba(255,255,255,0.2); }
-        .poster-logo { font-family: 'Montserrat', sans-serif; font-size: 2.5vmin; font-weight: 800; letter-spacing: 3px; }
+        .poster-meeting-info { margin-top: auto; padding: 4%; border-radius: 15px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); text-align: center; }
+        .meeting-title { font-size: 2.8vmin; font-weight: 700; margin-bottom: 2%; letter-spacing: 1px; }
+        .meeting-time { font-size: 2.5vmin; margin-bottom: 2%; }
+        .meeting-time-zones { font-size: 2.2vmin; opacity: 0.9; }
+        .meeting-platform { font-size: 2vmin; opacity: 0.8; margin-top: 2%; }
+
+        .poster-footer { margin-top: 4%; text-align: center; padding-top: 3%; border-top: 1px solid rgba(255,255,255,0.2); }
+        .poster-logo { font-family: 'Montserrat', sans-serif; font-size: 3vmin; font-weight: 800; letter-spacing: 4px; }
         .poster-tagline { font-size: 1.8vmin; opacity: 0.7; margin-top: 1%; }
 
         .action-buttons { display: flex; gap: 12px; margin-top: 25px; flex-wrap: wrap; justify-content: center; }
-        .action-btn { padding: 14px 28px; border: none; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 700; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .action-btn { padding: 14px 28px; border: none; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .action-btn.primary { background: linear-gradient(135deg, #d4af37, #f4d03f); color: #1a1a2e; }
         .action-btn.secondary { background: #1a1a2e; color: #d4af37; }
-        .action-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
 
-        .history-section { background: #fff; border-radius: 12px; padding: 15px; margin-top: 20px; max-height: 300px; overflow-y: auto; width: 100%; max-width: 450px; }
+        .history-section { background: #fff; border-radius: 12px; padding: 15px; margin-top: 20px; max-height: 250px; overflow-y: auto; width: 100%; max-width: 450px; }
         .history-section h4 { font-size: 13px; color: #1a1a2e; margin-bottom: 12px; }
-        .history-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
+        .history-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
         .history-item:hover { background: #e8e8e8; }
-        .history-thumb { width: 40px; height: 70px; background-size: cover; background-position: center; border-radius: 4px; background-color: #1a1a2e; }
+        .history-thumb { width: 40px; height: 70px; background: #1a1a2e; border-radius: 4px; }
         .history-info { flex: 1; }
-        .history-title { font-size: 12px; font-weight: 600; color: #333; }
+        .history-title { font-size: 12px; font-weight: 600; }
         .history-date { font-size: 10px; color: #888; }
         .history-delete { padding: 5px 10px; background: #fee; color: #c00; border: none; border-radius: 5px; cursor: pointer; font-size: 11px; }
 
@@ -186,35 +166,29 @@
         .modal-overlay.show { display: flex; }
         .modal-content { background: #fff; border-radius: 20px; padding: 30px; max-width: 500px; width: 100%; max-height: 80vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h3 { font-family: 'Montserrat', sans-serif; font-size: 18px; color: #1a1a2e; }
+        .modal-header h3 { font-size: 18px; color: #1a1a2e; }
         .modal-close { width: 36px; height: 36px; border: none; background: #f0f0f0; border-radius: 50%; cursor: pointer; font-size: 18px; }
 
         .speaker-library-list { max-height: 400px; overflow-y: auto; }
-        .speaker-library-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+        .speaker-library-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 12px; margin-bottom: 10px; cursor: pointer; }
         .speaker-library-item:hover { background: #e8e8e8; }
         .speaker-library-photo { width: 60px; height: 80px; border-radius: 8px; object-fit: cover; background: #ddd; }
         .speaker-library-info { flex: 1; }
-        .speaker-library-name { font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+        .speaker-library-name { font-weight: 700; color: #1a1a2e; }
         .speaker-library-title { font-size: 12px; color: #666; }
         .speaker-library-actions { display: flex; gap: 8px; }
         .speaker-library-actions button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; }
         .speaker-library-actions .use-btn { background: #d4af37; color: #1a1a2e; }
         .speaker-library-actions .delete-btn { background: #fee; color: #c00; }
 
-        /* API Key Modal */
-        .api-key-input { width: 100%; padding: 12px; border: 2px solid #e8e8e8; border-radius: 10px; font-size: 14px; margin-bottom: 15px; }
-        .api-key-hint { font-size: 12px; color: #666; margin-bottom: 15px; line-height: 1.6; }
-        .api-key-hint a { color: #2196f3; }
-
-        /* Template Grid */
-        .template-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
-        .template-btn { aspect-ratio: 9/16; border: 3px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
-        .template-btn.active { border-color: #d4af37; transform: scale(1.05); }
-        .template-btn span { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; font-size: 10px; padding: 4px; text-align: center; }
+        .template-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; }
+        .template-btn { aspect-ratio: 9/16; border: 3px solid transparent; border-radius: 8px; cursor: pointer; position: relative; overflow: hidden; }
+        .template-btn.active { border-color: #d4af37; }
+        .template-btn span { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; font-size: 9px; padding: 3px; text-align: center; }
 
         .color-schemes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
-        .color-scheme-btn { width: 50px; height: 50px; border: 3px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
-        .color-scheme-btn.active { border-color: #1a1a2e; transform: scale(1.1); }
+        .color-scheme-btn { width: 45px; height: 45px; border: 3px solid transparent; border-radius: 8px; cursor: pointer; position: relative; overflow: hidden; }
+        .color-scheme-btn.active { border-color: #1a1a2e; }
         .color-scheme-btn::before, .color-scheme-btn::after { content: ''; position: absolute; width: 50%; height: 100%; top: 0; }
         .color-scheme-btn::before { left: 0; }
         .color-scheme-btn::after { right: 0; }
@@ -228,17 +202,13 @@
         .color-scheme-btn[data-scheme="4"]::after { background: #3498db; }
         .color-scheme-btn[data-scheme="5"]::before { background: #1a2e1a; }
         .color-scheme-btn[data-scheme="5"]::after { background: #27ae60; }
-
-        .custom-bg-upload { margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 12px; border: 2px dashed #ccc; text-align: center; cursor: pointer; }
-        .custom-bg-upload:hover { border-color: #d4af37; background: #fffbeb; }
-        .custom-bg-preview { margin-top: 10px; max-height: 100px; overflow: hidden; border-radius: 8px; }
-        .custom-bg-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .color-scheme-btn[data-scheme="6"]::before { background: #2e1a1a; }
+        .color-scheme-btn[data-scheme="6"]::after { background: #e74c3c; }
 
         .dynamic-items { margin-top: 10px; }
-        .dynamic-item { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .dynamic-item { display: flex; gap: 8px; margin-bottom: 8px; }
         .dynamic-item input { flex: 1; }
-        .dynamic-item button { padding: 8px 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
-        .dynamic-item .remove-btn { background: #fee; color: #c00; }
+        .dynamic-item button { padding: 8px 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; background: #fee; color: #c00; }
         .add-item-btn { padding: 10px 16px; background: #e3f2fd; color: #1976d2; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 8px; }
 
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 16px 32px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 2000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
@@ -258,10 +228,9 @@
         <div class="loading-text" id="loadingText">加载中...</div>
     </div>
 
-    <!-- Auth Screen -->
     <div class="auth-screen" id="authScreen">
         <div class="auth-box">
-            <h1>会议海报生成器 Pro</h1>
+            <h1>会议海报生成器</h1>
             <p class="subtitle">Hengsheng Team</p>
             <div class="auth-tabs">
                 <button class="auth-tab active" onclick="switchAuthTab('login')">登录</button>
@@ -289,170 +258,130 @@
         </div>
     </div>
 
-    <!-- Main App -->
     <div class="app-container" id="appContainer">
         <header class="app-header">
-            <h1>🎨 会议海报生成器 Pro</h1>
+            <h1>🎨 会议海报生成器</h1>
             <div class="header-user"><span id="userEmail"></span></div>
             <div class="header-buttons">
                 <button class="header-btn" onclick="openSpeakerLibrary()">👥 讲师库</button>
                 <button class="header-btn" onclick="openTemplateLibrary()">📑 模板库</button>
                 <button class="header-btn" onclick="saveAsTemplate()">💾 保存</button>
-                <button class="header-btn" onclick="openApiSettings()">⚙️ API</button>
                 <button class="header-btn logout-btn" onclick="handleLogout()">退出</button>
             </div>
         </header>
 
         <div class="main-content">
             <div class="form-section">
-                <!-- Quick Fill -->
                 <div class="quick-fill-section">
-                    <h4>⚡ 一键填充</h4>
-                    <div class="quick-fill-btns">
+                    <h4>⚡ 快速选择讲师</h4>
+                    <div class="quick-fill-btns" id="quickFillBtns">
                         <button class="quick-fill-btn" onclick="quickFill('lisa')">Lisa Yao</button>
                         <button class="quick-fill-btn" onclick="quickFill('shirley')">Shirley Wang</button>
                     </div>
                 </div>
 
-                <!-- Tabs -->
                 <div class="tab-container">
                     <button class="tab-btn active" onclick="switchTab('speaker')">讲师</button>
                     <button class="tab-btn" onclick="switchTab('content')">内容</button>
                     <button class="tab-btn" onclick="switchTab('meeting')">会议</button>
                     <button class="tab-btn" onclick="switchTab('design')">设计</button>
-                    <button class="tab-btn" onclick="switchTab('export')">导出</button>
                 </div>
 
-                <!-- Speaker Tab -->
+                <!-- 讲师 Tab -->
                 <div class="tab-content active" id="tab-speaker">
-                    <div class="speaker-select-container">
-                        <select id="speakerSelect" onchange="loadSpeaker()">
-                            <option value="">-- 选择讲师 --</option>
-                            <option value="lisa">Lisa Yao</option>
-                            <option value="shirley">Shirley Wang</option>
-                        </select>
-                        <button onclick="saveSpeaker()">保存</button>
-                    </div>
-
                     <div class="form-section-title">讲师信息</div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="auto-translate-label">中文姓名 <span class="auto-badge api-badge">API翻译</span></label>
+                            <label>中文姓名 <span class="auto-badge">自动翻译</span></label>
                             <input type="text" id="speakerName" placeholder="如：范文明" oninput="onChineseNameInput()">
                         </div>
                         <div class="form-group">
                             <label>英文姓名</label>
-                            <input type="text" id="speakerNameEn" placeholder="自动翻译" oninput="updatePreview()">
+                            <input type="text" id="speakerNameEn" placeholder="自动生成" oninput="updatePreview()">
                         </div>
                     </div>
                     <div class="form-group">
                         <label>讲师头衔</label>
-                        <textarea id="speakerTitle" placeholder="资深行业导师 | 金融公司CEO" oninput="updatePreview()"></textarea>
+                        <textarea id="speakerTitle" placeholder="资深行业导师 | 金融公司CEO | 十年行业经验" oninput="updatePreview()"></textarea>
                     </div>
 
                     <div class="form-section-title">讲师成就</div>
-                    <div class="dynamic-items" id="achievementsList">
-                        <div class="dynamic-item">
-                            <input type="text" placeholder="成就1" oninput="updatePreview()">
-                            <button class="remove-btn" onclick="removeItem(this)">✕</button>
-                        </div>
-                    </div>
+                    <div class="dynamic-items" id="achievementsList"></div>
                     <button class="add-item-btn" onclick="addAchievement()">+ 添加成就</button>
 
                     <div class="form-section-title">讲师照片</div>
-                    <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
+                    <div class="photo-upload-area" id="photoUploadArea" onclick="document.getElementById('photoInput').click()">
                         <div class="upload-text" id="photoPlaceholder"><span>📷</span>点击上传照片</div>
                         <img id="photoPreviewImg" style="display:none;">
                     </div>
                     <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
 
-                    <!-- Enhanced Image Controls -->
-                    <div class="image-controls">
-                        <h5>🎛️ 图片调整</h5>
+                    <div class="image-controls" id="imageControls">
+                        <h5>🎛️ 照片调整</h5>
                         <div class="control-grid">
                             <div class="control-item">
                                 <label>水平位置 <span id="posXVal">50%</span></label>
                                 <input type="range" id="photoPositionX" min="0" max="100" value="50" oninput="updateImageControls()">
                             </div>
                             <div class="control-item">
-                                <label>垂直位置 <span id="posYVal">0%</span></label>
-                                <input type="range" id="photoPositionY" min="0" max="100" value="0" oninput="updateImageControls()">
+                                <label>垂直位置 <span id="posYVal">20%</span></label>
+                                <input type="range" id="photoPositionY" min="0" max="100" value="20" oninput="updateImageControls()">
                             </div>
                             <div class="control-item">
                                 <label>缩放 <span id="scaleVal">100%</span></label>
-                                <input type="range" id="photoScale" min="50" max="200" value="100" oninput="updateImageControls()">
-                            </div>
-                            <div class="control-item">
-                                <label>旋转 <span id="rotateVal">0°</span></label>
-                                <input type="range" id="photoRotate" min="-180" max="180" value="0" oninput="updateImageControls()">
+                                <input type="range" id="photoScale" min="80" max="180" value="100" oninput="updateImageControls()">
                             </div>
                             <div class="control-item">
                                 <label>亮度 <span id="brightnessVal">100%</span></label>
-                                <input type="range" id="photoBrightness" min="50" max="150" value="100" oninput="updateImageControls()">
-                            </div>
-                            <div class="control-item">
-                                <label>对比度 <span id="contrastVal">100%</span></label>
-                                <input type="range" id="photoContrast" min="50" max="150" value="100" oninput="updateImageControls()">
-                            </div>
-                            <div class="control-item full">
-                                <label>饱和度 <span id="saturationVal">100%</span></label>
-                                <input type="range" id="photoSaturation" min="0" max="200" value="100" oninput="updateImageControls()">
+                                <input type="range" id="photoBrightness" min="70" max="130" value="100" oninput="updateImageControls()">
                             </div>
                         </div>
                         <div class="image-action-btns">
                             <button class="image-action-btn" id="flipHBtn" onclick="toggleFlip('h')">↔️ 水平翻转</button>
-                            <button class="image-action-btn" id="flipVBtn" onclick="toggleFlip('v')">↕️ 垂直翻转</button>
                             <button class="image-action-btn" onclick="resetImageControls()">🔄 重置</button>
-                        </div>
-                        <div class="image-action-btns" style="margin-top:8px;">
                             <button class="image-action-btn removebg" onclick="autoRemoveBg()">✨ AI抠图</button>
                         </div>
                     </div>
+
+                    <div class="form-section-title">保存讲师到云端</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="speakerSaveId" placeholder="讲师ID（如：kevin）">
+                        </div>
+                        <button style="padding:11px 20px;background:#4caf50;color:white;border:none;border-radius:10px;cursor:pointer;font-weight:600;" onclick="saveSpeakerToCloud()">保存</button>
+                    </div>
                 </div>
 
-                <!-- Content Tab -->
+                <!-- 内容 Tab -->
                 <div class="tab-content" id="tab-content">
-                    <div class="form-section-title">徽章</div>
-                    <div class="form-group">
-                        <label>徽章文字</label>
-                        <input type="text" id="badge" value="限时直播" oninput="updatePreview()">
-                    </div>
-
                     <div class="form-section-title">标题</div>
                     <div class="form-group">
-                        <label class="auto-translate-label">主标题（中文）<span class="auto-badge api-badge">API翻译</span></label>
+                        <label>徽章文字</label>
+                        <input type="text" id="badge" value="专业培训" oninput="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>主标题（中文）<span class="auto-badge">自动翻译</span></label>
                         <input type="text" id="mainTitle" placeholder="销售成功秘籍" oninput="onMainTitleInput()">
                     </div>
                     <div class="form-group">
                         <label>主标题（英文）</label>
-                        <input type="text" id="mainTitleEn" placeholder="自动翻译或手动输入" oninput="updatePreview()">
+                        <input type="text" id="mainTitleEn" placeholder="自动生成" oninput="updatePreview()">
                     </div>
                     <div class="form-group">
-                        <label class="auto-translate-label">副标题（中文）<span class="auto-badge api-badge">API翻译</span></label>
-                        <input type="text" id="subtitle" placeholder="新人入门必修课" oninput="onSubtitleInput()">
-                    </div>
-                    <div class="form-group">
-                        <label>副标题（英文）</label>
-                        <input type="text" id="subtitleEn" placeholder="自动翻译或手动输入" oninput="updatePreview()">
+                        <label>副标题</label>
+                        <input type="text" id="subtitle" placeholder="新人入门必修课" oninput="updatePreview()">
                     </div>
 
-                    <!-- AI Translate Button -->
                     <div class="ai-translate-section">
-                        <h5>🌐 AI智能翻译</h5>
-                        <button class="ai-translate-btn" onclick="translateAllFields()" id="translateAllBtn">一键翻译所有中文内容</button>
+                        <button class="ai-translate-btn" onclick="translateAllFields()" id="translateAllBtn">🌐 一键智能翻译</button>
                     </div>
 
                     <div class="form-section-title">内容要点</div>
-                    <div class="dynamic-items" id="pointsList">
-                        <div class="dynamic-item">
-                            <input type="text" placeholder="要点1" oninput="updatePreview()">
-                            <button class="remove-btn" onclick="removeItem(this)">✕</button>
-                        </div>
-                    </div>
+                    <div class="dynamic-items" id="pointsList"></div>
                     <button class="add-item-btn" onclick="addPoint()">+ 添加要点</button>
                 </div>
 
-                <!-- Meeting Tab -->
+                <!-- 会议 Tab - 简化版 -->
                 <div class="tab-content" id="tab-meeting">
                     <div class="form-section-title">会议时间</div>
                     <div class="form-row">
@@ -462,79 +391,51 @@
                         </div>
                         <div class="form-group">
                             <label>时间（加州）</label>
-                            <input type="time" id="meetingTime" onchange="updatePreview()">
+                            <input type="time" id="meetingTime" value="19:00" onchange="updatePreview()">
                         </div>
                     </div>
-                    <div class="form-hint">自动转换为北京时间和纽约时间</div>
+                    <div class="form-hint">✨ 自动显示北京和纽约时间</div>
 
-                    <div class="form-section-title">Zoom 信息</div>
+                    <div class="form-section-title">会议平台</div>
                     <div class="form-group">
-                        <label>Zoom 链接 <span class="auto-badge" style="background:#e8f5e9;color:#2e7d32;">自动记忆</span></label>
-                        <input type="text" id="zoomLink" placeholder="https://zoom.us/j/..." oninput="updatePreview();saveZoomInfo()">
+                        <label>Zoom 链接（粘贴完整链接自动解析）</label>
+                        <input type="text" id="zoomLink" placeholder="https://zoom.us/j/8752044..." oninput="parseZoomLink();updatePreview()">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>会议 ID</label>
-                            <input type="text" id="zoomId" placeholder="123 456 7890" oninput="updatePreview();saveZoomInfo()">
-                        </div>
-                        <div class="form-group">
-                            <label>会议密码</label>
-                            <input type="text" id="zoomPassword" placeholder="可选" oninput="updatePreview();saveZoomInfo()">
-                        </div>
-                    </div>
+                    <div class="form-hint" id="zoomParsed" style="color:#4caf50;display:none;">✓ 已自动识别会议信息</div>
                 </div>
 
-                <!-- Design Tab -->
+                <!-- 设计 Tab -->
                 <div class="tab-content" id="tab-design">
-                    <div class="form-section-title">背景模板</div>
+                    <div class="form-section-title">商务风格背景</div>
                     <div class="template-grid" id="templateGrid"></div>
-                    <div class="custom-bg-upload" onclick="document.getElementById('customBgInput').click()">
-                        <span>🖼️ 上传自定义背景</span>
-                        <div class="custom-bg-preview" id="customBgPreview"></div>
-                    </div>
-                    <input type="file" id="customBgInput" accept="image/*" style="display:none;" onchange="handleCustomBgUpload(event)">
 
                     <div class="form-section-title">配色方案</div>
                     <div class="color-schemes" id="colorSchemes"></div>
 
-                    <div class="form-section-title">品牌信息</div>
-                    <div class="form-group">
-                        <label>品牌名称</label>
-                        <input type="text" id="brandName" value="HENGSHENG" oninput="updatePreview()">
-                    </div>
-                    <div class="form-group">
-                        <label>品牌口号</label>
-                        <input type="text" id="brandTagline" value="共创财富 · 成就未来" oninput="updatePreview()">
-                    </div>
-                </div>
-
-                <!-- Export Tab -->
-                <div class="tab-content" id="tab-export">
-                    <div class="form-section-title">单张导出</div>
-                    <div class="action-buttons" style="justify-content:flex-start;margin-top:0;">
-                        <button class="action-btn primary" onclick="downloadPoster()">📥 下载海报</button>
-                        <button class="action-btn secondary" onclick="copyNotification()">📋 复制通知</button>
+                    <div class="form-section-title">品牌</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>品牌名称</label>
+                            <input type="text" id="brandName" value="HENGSHENG" oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>品牌口号</label>
+                            <input type="text" id="brandTagline" value="共创财富 · 成就未来" oninput="updatePreview()">
+                        </div>
                     </div>
 
-                    <!-- Batch Export -->
                     <div class="batch-export-section">
                         <h4>📦 批量导出</h4>
-                        <p style="font-size:11px;color:#880e4f;margin-bottom:10px;">选择要导出的尺寸（可多选）：</p>
                         <div class="batch-options" id="batchOptions">
-                            <div class="batch-option selected" data-size="1080x1920">1080×1920 (手机)</div>
-                            <div class="batch-option" data-size="1200x1500">1200×1500 (Instagram)</div>
-                            <div class="batch-option" data-size="1920x1080">1920×1080 (横屏)</div>
-                            <div class="batch-option" data-size="800x1200">800×1200 (小尺寸)</div>
+                            <div class="batch-option selected" data-size="1080x1920">手机</div>
+                            <div class="batch-option" data-size="1200x1500">Instagram</div>
+                            <div class="batch-option" data-size="1920x1080">横屏</div>
                         </div>
-                        <button class="batch-export-btn" onclick="batchExport()">🚀 批量导出选中尺寸</button>
+                        <button class="batch-export-btn" onclick="batchExport()">🚀 批量导出</button>
                     </div>
-
-                    <div class="form-section-title" style="margin-top:25px;">历史记录</div>
-                    <div id="historyList" style="max-height:200px;overflow-y:auto;"></div>
                 </div>
             </div>
 
-            <!-- Preview Section -->
             <div class="preview-section">
                 <div class="preview-container">
                     <div class="poster-preview" id="posterPreview"></div>
@@ -542,11 +443,10 @@
                 <div class="action-buttons">
                     <button class="action-btn primary" onclick="downloadPoster()">📥 下载海报</button>
                     <button class="action-btn secondary" onclick="copyNotification()">📋 复制通知</button>
-                    <button class="action-btn secondary" onclick="openEmailClient()">📧 邮件</button>
                 </div>
-                <div class="history-section" id="historySection">
-                    <h4>📜 历史记录</h4>
-                    <div id="historyListPreview"></div>
+                <div class="history-section">
+                    <h4>📜 最近制作</h4>
+                    <div id="historyList"></div>
                 </div>
             </div>
         </div>
@@ -573,28 +473,10 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="apiModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>⚙️ API 设置</h3>
-                <button class="modal-close" onclick="closeModal('apiModal')">✕</button>
-            </div>
-            <div class="form-group">
-                <label>Remove.bg API Key（用于自动抠图）</label>
-                <input type="text" class="api-key-input" id="removebgApiKey" value="NfXtw5Uo4JZ5GvpAmrQF9dB3" placeholder="输入你的API Key">
-                <p class="api-key-hint">
-                    免费获取：<a href="https://www.remove.bg/api" target="_blank">https://www.remove.bg/api</a><br>
-                    每月免费50张抠图额度
-                </p>
-            </div>
-            <button class="auth-btn" onclick="saveApiKeys()">保存设置</button>
-        </div>
-    </div>
-
     <div class="toast" id="toast"></div>
 
     <script>
-        // ============ FIREBASE CONFIG ============
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyBS83JliIcoJg2T9nVXG5KUXT9n0nQ-bFM",
             authDomain: "prompt-generator-36ba4.firebaseapp.com",
@@ -608,63 +490,67 @@
         const db = firebase.firestore();
         let currentUser = null;
 
-        // ============ STATE ============
+        // Hidden API Key
+        const REMOVEBG_API_KEY = 'NfXtw5Uo4JZ5GvpAmrQF9dB3';
+
+        // State
         let state = {
-            template: 1, colorScheme: 1, photo: '', customBg: '',
-            photoPosition: { x: 50, y: 0 }, photoScale: 100, photoRotate: 0,
-            photoBrightness: 100, photoContrast: 100, photoSaturation: 100,
-            flipH: false, flipV: false, removebgApiKey: 'NfXtw5Uo4JZ5GvpAmrQF9dB3'
+            template: 1, colorScheme: 1, photo: '',
+            photoPosition: { x: 50, y: 20 }, photoScale: 100, photoBrightness: 100,
+            flipH: false
         };
 
+        // 商务大气背景配置
+        const backgrounds = [
+            { name: '金蓝尊贵', gradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' },
+            { name: '深邃商务', gradient: 'linear-gradient(180deg, #0d1b2a 0%, #1b263b 50%, #415a77 100%)' },
+            { name: '紫金典雅', gradient: 'linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 50%, #4a1f6e 100%)' },
+            { name: '翡翠财富', gradient: 'linear-gradient(135deg, #0a2e1a 0%, #1a4a2e 50%, #2d6a4f 100%)' },
+            { name: '红金财运', gradient: 'linear-gradient(135deg, #2e1a1a 0%, #4a2d2d 50%, #6b3a3a 100%)' },
+            { name: '科技蓝', gradient: 'linear-gradient(180deg, #0a192f 0%, #172a45 50%, #1f4068 100%)' },
+            { name: '暗夜星空', gradient: 'linear-gradient(180deg, #000428 0%, #004e92 100%)' },
+            { name: '经典黑金', gradient: 'linear-gradient(180deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%)' }
+        ];
+
         const colorSchemes = {
-            1: { primary: '#1a1a2e', accent: '#d4af37', gradient: 'linear-gradient(180deg, rgba(26,26,46,0.95) 0%, rgba(26,26,46,0.8) 100%)' },
-            2: { primary: '#0d2137', accent: '#c9a227', gradient: 'linear-gradient(180deg, rgba(13,33,55,0.95) 0%, rgba(13,33,55,0.8) 100%)' },
-            3: { primary: '#1a0a2e', accent: '#9b59b6', gradient: 'linear-gradient(180deg, rgba(26,10,46,0.95) 0%, rgba(26,10,46,0.8) 100%)' },
-            4: { primary: '#0a1a2e', accent: '#3498db', gradient: 'linear-gradient(180deg, rgba(10,26,46,0.95) 0%, rgba(10,26,46,0.8) 100%)' },
-            5: { primary: '#1a2e1a', accent: '#27ae60', gradient: 'linear-gradient(180deg, rgba(26,46,26,0.95) 0%, rgba(26,46,26,0.8) 100%)' }
+            1: { primary: '#1a1a2e', accent: '#d4af37', text: '#ffffff' },
+            2: { primary: '#0d2137', accent: '#c9a227', text: '#ffffff' },
+            3: { primary: '#1a0a2e', accent: '#9b59b6', text: '#ffffff' },
+            4: { primary: '#0a1a2e', accent: '#3498db', text: '#ffffff' },
+            5: { primary: '#1a2e1a', accent: '#27ae60', text: '#ffffff' },
+            6: { primary: '#2e1a1a', accent: '#e74c3c', text: '#ffffff' }
         };
 
         const defaultSpeakers = {
-            lisa: { name: 'Lisa Yao', nameEn: 'Lisa Yao', title: '移民公司总裁 | 资深行业导师', achievements: ['多年传统生意老板', '美国移民区域中心负责人', '曾创立中美会员上万家的行销网络平台'], photo: '' },
-            shirley: { name: 'Shirley Wang', nameEn: 'Shirley Wang', title: '资深行业导师 | 金融科技公司CEO', achievements: ['金融数学双硕士', '曾在华尔街和中国银行任职', '保险公司高管'], photo: '' }
+            lisa: { name: 'Lisa Yao', nameEn: 'Lisa Yao', title: '移民公司总裁 | 资深行业导师 | 十多年移民行业经验', achievements: ['多年传统生意老板', '美国移民区域中心负责人', '曾创立中美会员上万家的行销网络平台', '现为全球金融家办公室创始人'] },
+            shirley: { name: 'Shirley Wang', nameEn: 'Shirley Wang', title: '资深行业导师 | 金融科技公司CEO | 十多年金融领域从业经验', achievements: ['金融数学双硕士', '曾在华尔街和中国银行任职', '保险公司高管', '平台资深导师'] }
         };
 
-        // ============ TRANSLATION DICTIONARY ============
+        // Translation Dictionary
         const translationDict = {
-            '成功': 'SUCCESS', '宝典': 'SECRETS', '秘籍': 'TIPS', '攻略': 'GUIDE',
-            '课程': 'COURSE', '培训': 'TRAINING', '讲座': 'SEMINAR', '分享': 'SHARING',
-            '新人': 'BEGINNER', '必修': 'ESSENTIAL', '进阶': 'ADVANCED', '高级': 'PREMIUM',
-            '入门': 'INTRODUCTION', '基础': 'BASIC', '实战': 'PRACTICAL', '实操': 'HANDS-ON',
-            '技巧': 'SKILLS', '方法': 'METHODS', '策略': 'STRATEGY', '秘诀': 'SECRETS',
-            '销售': 'SALES', '营销': 'MARKETING', '客户': 'CLIENT', '成交': 'CLOSING',
-            '团队': 'TEAM', '领导': 'LEADERSHIP', '管理': 'MANAGEMENT', '专业': 'PROFESSIONAL',
-            '金融': 'FINANCE', '投资': 'INVESTMENT', '理财': 'WEALTH MANAGEMENT',
-            '保险': 'INSURANCE', '房产': 'REAL ESTATE', '移民': 'IMMIGRATION',
-            '精英': 'ELITE', '冠军': 'CHAMPION', '明星': 'STAR', '揭秘': 'REVEAL',
-            '快速': 'QUICK', '高效': 'EFFICIENT', '轻松': 'EASY', '简单': 'SIMPLE',
-            '系统': 'SYSTEM', '体系': 'FRAMEWORK', '模式': 'MODEL', '流程': 'PROCESS',
-            '直播': 'LIVE', '限时': 'LIMITED TIME', '免费': 'FREE', '独家': 'EXCLUSIVE',
-            '致富': 'GET RICH', '赚钱': 'MAKE MONEY', '创业': 'STARTUP', '商业': 'BUSINESS'
+            '成功': 'SUCCESS', '宝典': 'SECRETS', '秘籍': 'TIPS', '攻略': 'GUIDE', '课程': 'COURSE',
+            '培训': 'TRAINING', '讲座': 'SEMINAR', '分享': 'SHARING', '新人': 'BEGINNER', '必修': 'ESSENTIAL',
+            '进阶': 'ADVANCED', '高级': 'PREMIUM', '入门': 'INTRODUCTION', '基础': 'BASIC', '实战': 'PRACTICAL',
+            '技巧': 'SKILLS', '方法': 'METHODS', '策略': 'STRATEGY', '销售': 'SALES', '营销': 'MARKETING',
+            '客户': 'CLIENT', '成交': 'CLOSING', '团队': 'TEAM', '领导': 'LEADERSHIP', '管理': 'MANAGEMENT',
+            '金融': 'FINANCE', '投资': 'INVESTMENT', '理财': 'WEALTH', '保险': 'INSURANCE', '房产': 'REAL ESTATE',
+            '移民': 'IMMIGRATION', '精英': 'ELITE', '冠军': 'CHAMPION', '揭秘': 'REVEAL', '快速': 'QUICK',
+            '高效': 'EFFICIENT', '系统': 'SYSTEM', '直播': 'LIVE', '限时': 'LIMITED', '专业': 'PROFESSIONAL'
         };
 
-        const compoundSurnames = { '欧阳': 'Ouyang', '司马': 'Sima', '上官': 'Shangguan', '诸葛': 'Zhuge', '东方': 'Dongfang', '慕容': 'Murong' };
+        const compoundSurnames = { '欧阳': 'Ouyang', '司马': 'Sima', '诸葛': 'Zhuge', '慕容': 'Murong' };
         const pinyinMap = {
-            '范': 'Fan', '李': 'Li', '王': 'Wang', '张': 'Zhang', '刘': 'Liu', '陈': 'Chen', '杨': 'Yang', '黄': 'Huang',
-            '周': 'Zhou', '吴': 'Wu', '赵': 'Zhao', '徐': 'Xu', '孙': 'Sun', '马': 'Ma', '林': 'Lin', '郭': 'Guo',
-            '凯': 'Kai', '文': 'Wen', '明': 'Ming', '华': 'Hua', '伟': 'Wei', '强': 'Qiang', '军': 'Jun', '磊': 'Lei',
-            '杰': 'Jie', '娟': 'Juan', '敏': 'Min', '静': 'Jing', '丽': 'Li', '艳': 'Yan', '芳': 'Fang', '玲': 'Ling',
-            '浩': 'Hao', '博': 'Bo', '涛': 'Tao', '鹏': 'Peng', '飞': 'Fei', '龙': 'Long', '峰': 'Feng', '海': 'Hai',
-            '欣': 'Xin', '颖': 'Ying', '婷': 'Ting', '雪': 'Xue', '琳': 'Lin', '倩': 'Qian', '莉': 'Li', '瑶': 'Yao'
+            '范': 'Fan', '李': 'Li', '王': 'Wang', '张': 'Zhang', '刘': 'Liu', '陈': 'Chen', '杨': 'Yang',
+            '黄': 'Huang', '周': 'Zhou', '吴': 'Wu', '赵': 'Zhao', '孙': 'Sun', '马': 'Ma', '林': 'Lin',
+            '凯': 'Kai', '文': 'Wen', '明': 'Ming', '华': 'Hua', '伟': 'Wei', '强': 'Qiang', '军': 'Jun',
+            '杰': 'Jie', '敏': 'Min', '静': 'Jing', '丽': 'Li', '芳': 'Fang', '玲': 'Ling', '浩': 'Hao',
+            '博': 'Bo', '涛': 'Tao', '鹏': 'Peng', '飞': 'Fei', '龙': 'Long', '峰': 'Feng', '海': 'Hai'
         };
 
-        // ============ TRANSLATION FUNCTIONS ============
         function translateName(name) {
             if (!name || !/[\u4e00-\u9fa5]/.test(name)) return '';
             let result = [], i = 0;
-            if (name.length >= 2) {
-                const first2 = name.substring(0, 2);
-                if (compoundSurnames[first2]) { result.push(compoundSurnames[first2]); i = 2; }
-            }
+            if (name.length >= 2 && compoundSurnames[name.substring(0, 2)]) { result.push(compoundSurnames[name.substring(0, 2)]); i = 2; }
             for (; i < name.length; i++) { if (pinyinMap[name[i]]) result.push(pinyinMap[name[i]]); }
             return result.join(' ');
         }
@@ -672,79 +558,51 @@
         function translateTextLocal(text) {
             if (!text || !/[\u4e00-\u9fa5]/.test(text)) return '';
             let words = [], remaining = text;
-            const sortedKeys = Object.keys(translationDict).sort((a, b) => b.length - a.length);
+            const keys = Object.keys(translationDict).sort((a, b) => b.length - a.length);
             while (remaining.length > 0 && /[\u4e00-\u9fa5]/.test(remaining)) {
                 let found = false;
-                for (let cn of sortedKeys) {
-                    if (remaining.startsWith(cn)) { words.push(translationDict[cn]); remaining = remaining.substring(cn.length); found = true; break; }
-                }
+                for (let cn of keys) { if (remaining.startsWith(cn)) { words.push(translationDict[cn]); remaining = remaining.substring(cn.length); found = true; break; } }
                 if (!found) remaining = remaining.substring(1);
             }
             return words.join(' ');
         }
 
-        // Online Translation API (MyMemory - Free)
         async function translateTextOnline(text) {
             if (!text || !/[\u4e00-\u9fa5]/.test(text)) return '';
             try {
-                const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=zh-CN|en`);
-                const data = await response.json();
-                if (data.responseStatus === 200) {
-                    return data.responseData.translatedText.toUpperCase();
-                }
-            } catch (e) { console.error('Translation API error:', e); }
-            return translateTextLocal(text); // Fallback to local
+                const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=zh-CN|en`);
+                const data = await res.json();
+                if (data.responseStatus === 200) return data.responseData.translatedText.toUpperCase();
+            } catch (e) {}
+            return translateTextLocal(text);
         }
 
         async function translateAllFields() {
             const btn = document.getElementById('translateAllBtn');
             btn.disabled = true; btn.textContent = '翻译中...';
-            try {
-                const mainTitle = document.getElementById('mainTitle').value;
-                const subtitle = document.getElementById('subtitle').value;
-                const speakerName = document.getElementById('speakerName').value;
-
-                if (mainTitle) {
-                    const translated = await translateTextOnline(mainTitle);
-                    if (translated) document.getElementById('mainTitleEn').value = translated;
-                }
-                if (subtitle) {
-                    const translated = await translateTextOnline(subtitle);
-                    if (translated) document.getElementById('subtitleEn').value = translated;
-                }
-                if (speakerName) {
-                    const translated = translateName(speakerName);
-                    if (translated) document.getElementById('speakerNameEn').value = translated;
-                }
-                updatePreview();
-                showToast('翻译完成！', 'success');
-            } catch (e) { showToast('翻译失败', 'error'); }
-            btn.disabled = false; btn.textContent = '一键翻译所有中文内容';
+            const mainTitle = document.getElementById('mainTitle').value;
+            const speakerName = document.getElementById('speakerName').value;
+            if (mainTitle) { const t = await translateTextOnline(mainTitle); if (t) document.getElementById('mainTitleEn').value = t; }
+            if (speakerName) { const t = translateName(speakerName); if (t) document.getElementById('speakerNameEn').value = t; }
+            updatePreview();
+            showToast('翻译完成！', 'success');
+            btn.disabled = false; btn.textContent = '🌐 一键智能翻译';
         }
 
-        // ============ REMOVE.BG API ============
+        // Auto Remove BG
         async function autoRemoveBg() {
             if (!state.photo) { showToast('请先上传照片', 'error'); return; }
-            if (!state.removebgApiKey) {
-                showToast('请先设置 Remove.bg API Key', 'error');
-                openApiSettings();
-                return;
-            }
-            showLoading('正在AI抠图...');
+            showLoading('AI智能抠图中...');
             try {
                 const blob = await fetch(state.photo).then(r => r.blob());
                 const formData = new FormData();
                 formData.append('image_file', blob);
                 formData.append('size', 'auto');
-
-                const response = await fetch('https://api.remove.bg/v1.0/removebg', {
-                    method: 'POST',
-                    headers: { 'X-Api-Key': state.removebgApiKey },
-                    body: formData
+                const res = await fetch('https://api.remove.bg/v1.0/removebg', {
+                    method: 'POST', headers: { 'X-Api-Key': REMOVEBG_API_KEY }, body: formData
                 });
-
-                if (!response.ok) throw new Error('API请求失败');
-                const resultBlob = await response.blob();
+                if (!res.ok) throw new Error('抠图失败');
+                const resultBlob = await res.blob();
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     state.photo = e.target.result;
@@ -754,20 +612,27 @@
                     showToast('抠图成功！', 'success');
                 };
                 reader.readAsDataURL(resultBlob);
-            } catch (e) {
-                hideLoading();
-                showToast('抠图失败：' + e.message, 'error');
+            } catch (e) { hideLoading(); showToast('抠图失败: ' + e.message, 'error'); }
+        }
+
+        // Parse Zoom Link
+        function parseZoomLink() {
+            const link = document.getElementById('zoomLink').value;
+            if (link && link.includes('zoom')) {
+                document.getElementById('zoomParsed').style.display = 'block';
+            } else {
+                document.getElementById('zoomParsed').style.display = 'none';
             }
         }
 
-        // ============ AUTH FUNCTIONS ============
+        // Auth Functions
         function switchAuthTab(tab) {
             document.getElementById('authError').classList.remove('show');
             document.getElementById('authSuccess').classList.remove('show');
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
             if (tab === 'login') { document.querySelectorAll('.auth-tab')[0].classList.add('active'); document.getElementById('loginForm').classList.add('active'); }
-            else if (tab === 'register') { document.querySelectorAll('.auth-tab')[1].classList.add('active'); document.getElementById('registerForm').classList.add('active'); }
+            else { document.querySelectorAll('.auth-tab')[1].classList.add('active'); document.getElementById('registerForm').classList.add('active'); }
         }
         function showForgotPassword() {
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -780,11 +645,10 @@
         async function handleLogin() {
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
-            if (!email) { showAuthError('请输入邮箱'); return; }
-            if (!password) { showAuthError('请输入密码'); return; }
+            if (!email || !password) { showAuthError('请输入邮箱和密码'); return; }
             document.getElementById('loginBtn').disabled = true;
             try { await auth.signInWithEmailAndPassword(email, password); }
-            catch (e) { showAuthError(e.code === 'auth/invalid-credential' ? '邮箱或密码错误' : '登录失败'); }
+            catch (e) { showAuthError('邮箱或密码错误'); }
             document.getElementById('loginBtn').disabled = false;
         }
 
@@ -804,79 +668,93 @@
         async function handleForgotPassword() {
             const email = document.getElementById('forgotEmail').value.trim();
             if (!email) { showAuthError('请输入邮箱'); return; }
-            try { await auth.sendPasswordResetEmail(email); showAuthSuccess('重置邮件已发送'); }
-            catch (e) { showAuthError('发送失败'); }
+            try { await auth.sendPasswordResetEmail(email); showAuthSuccess('重置邮件已发送'); } catch (e) { showAuthError('发送失败'); }
         }
 
         async function handleLogout() { await auth.signOut(); }
 
-        // ============ FIRESTORE FUNCTIONS ============
+        // Firestore Functions
         async function loadUserData() {
             if (!currentUser) return;
             try {
-                const userDoc = await db.collection('users').doc(currentUser.uid).get();
-                if (userDoc.exists) {
-                    const data = userDoc.data();
-                    if (data.zoomLink) document.getElementById('zoomLink').value = data.zoomLink;
-                    if (data.zoomId) document.getElementById('zoomId').value = data.zoomId;
-                    if (data.zoomPassword) document.getElementById('zoomPassword').value = data.zoomPassword;
-                    if (data.removebgApiKey) { state.removebgApiKey = data.removebgApiKey; document.getElementById('removebgApiKey').value = data.removebgApiKey; }
-                }
+                // Load speakers to quick fill
+                const speakersSnap = await db.collection('users').doc(currentUser.uid).collection('speakers').get();
+                const quickFillBtns = document.getElementById('quickFillBtns');
+                speakersSnap.forEach(doc => {
+                    const data = doc.data();
+                    if (!document.querySelector(`[data-speaker-id="${doc.id}"]`)) {
+                        const btn = document.createElement('button');
+                        btn.className = 'quick-fill-btn';
+                        btn.dataset.speakerId = doc.id;
+                        btn.textContent = data.name || doc.id;
+                        btn.onclick = () => loadSpeakerFromCloud(doc.id);
+                        quickFillBtns.appendChild(btn);
+                    }
+                });
                 await loadHistory();
-            } catch (e) { console.error('Load user data error:', e); }
+            } catch (e) { console.error(e); }
         }
 
-        async function saveZoomInfo() {
+        async function saveSpeakerToCloud() {
+            if (!currentUser) { showToast('请先登录', 'error'); return; }
+            const id = document.getElementById('speakerSaveId').value.trim().toLowerCase().replace(/\s+/g, '_');
+            if (!id) { showToast('请输入讲师ID', 'error'); return; }
+            const achievements = [];
+            document.querySelectorAll('#achievementsList input').forEach(i => { if (i.value.trim()) achievements.push(i.value.trim()); });
+            const data = {
+                name: document.getElementById('speakerName').value || document.getElementById('speakerNameEn').value,
+                nameCn: document.getElementById('speakerName').value,
+                nameEn: document.getElementById('speakerNameEn').value,
+                title: document.getElementById('speakerTitle').value,
+                achievements: achievements,
+                photo: state.photo,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            try {
+                await db.collection('users').doc(currentUser.uid).collection('speakers').doc(id).set(data);
+                showToast('讲师已保存到云端！', 'success');
+                await loadUserData();
+            } catch (e) { showToast('保存失败', 'error'); }
+        }
+
+        async function loadSpeakerFromCloud(id) {
             if (!currentUser) return;
             try {
-                await db.collection('users').doc(currentUser.uid).set({
-                    zoomLink: document.getElementById('zoomLink').value,
-                    zoomId: document.getElementById('zoomId').value,
-                    zoomPassword: document.getElementById('zoomPassword').value,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-            } catch (e) { console.error('Save Zoom error:', e); }
-        }
-
-        async function saveApiKeys() {
-            const removebgKey = document.getElementById('removebgApiKey').value.trim();
-            state.removebgApiKey = removebgKey;
-            if (currentUser) {
-                try {
-                    await db.collection('users').doc(currentUser.uid).set({ removebgApiKey: removebgKey }, { merge: true });
-                    showToast('API Key 已保存', 'success');
-                } catch (e) { showToast('保存失败', 'error'); }
-            }
-            closeModal('apiModal');
+                const doc = await db.collection('users').doc(currentUser.uid).collection('speakers').doc(id).get();
+                if (!doc.exists) return;
+                const d = doc.data();
+                document.getElementById('speakerName').value = d.nameCn || '';
+                document.getElementById('speakerNameEn').value = d.nameEn || '';
+                document.getElementById('speakerTitle').value = d.title || '';
+                document.getElementById('achievementsList').innerHTML = '';
+                (d.achievements || []).forEach(a => addAchievement(a));
+                if (d.photo) {
+                    state.photo = d.photo;
+                    document.getElementById('photoPreviewImg').src = d.photo;
+                    document.getElementById('photoPreviewImg').style.display = 'block';
+                    document.getElementById('photoPlaceholder').style.display = 'none';
+                }
+                updatePreview();
+                showToast('已加载讲师', 'success');
+            } catch (e) { console.error(e); }
         }
 
         async function loadHistory() {
             if (!currentUser) return;
-            const lists = ['historyList', 'historyListPreview'];
-            for (let listId of lists) {
-                const list = document.getElementById(listId);
-                if (!list) continue;
-                list.innerHTML = '<div style="text-align:center;color:#888;padding:10px;font-size:12px;">加载中...</div>';
-            }
+            const list = document.getElementById('historyList');
             try {
-                const snapshot = await db.collection('users').doc(currentUser.uid).collection('history').orderBy('createdAt', 'desc').limit(10).get();
+                const snap = await db.collection('users').doc(currentUser.uid).collection('history').orderBy('createdAt', 'desc').limit(5).get();
+                if (snap.empty) { list.innerHTML = '<div style="text-align:center;color:#888;font-size:12px;">暂无记录</div>'; return; }
                 let html = '';
-                if (snapshot.empty) { html = '<div style="text-align:center;color:#888;padding:10px;font-size:12px;">暂无历史记录</div>'; }
-                else {
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        html += `<div class="history-item" onclick="loadFromHistory('${doc.id}')">
-                            <div class="history-thumb"></div>
-                            <div class="history-info">
-                                <div class="history-title">${data.mainTitle || '未命名'}</div>
-                                <div class="history-date">${data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString('zh-CN') : ''}</div>
-                            </div>
-                            <button class="history-delete" onclick="event.stopPropagation();deleteHistory('${doc.id}')">删除</button>
-                        </div>`;
-                    });
-                }
-                for (let listId of lists) { const list = document.getElementById(listId); if (list) list.innerHTML = html; }
-            } catch (e) { console.error('Load history error:', e); }
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    html += `<div class="history-item" onclick="loadFromHistory('${doc.id}')">
+                        <div class="history-thumb"></div>
+                        <div class="history-info"><div class="history-title">${d.mainTitle || '未命名'}</div><div class="history-date">${d.createdAt ? new Date(d.createdAt.toDate()).toLocaleDateString('zh-CN') : ''}</div></div>
+                    </div>`;
+                });
+                list.innerHTML = html;
+            } catch (e) { list.innerHTML = '<div style="text-align:center;color:#888;font-size:12px;">加载失败</div>'; }
         }
 
         async function saveToHistory() {
@@ -888,12 +766,12 @@
                 await db.collection('users').doc(currentUser.uid).collection('history').add({
                     mainTitle: document.getElementById('mainTitle').value,
                     speaker: { nameCn: document.getElementById('speakerName').value, nameEn: document.getElementById('speakerNameEn').value, title: document.getElementById('speakerTitle').value, achievements },
-                    content: { badge: document.getElementById('badge').value, mainTitleEn: document.getElementById('mainTitleEn').value, subtitle: document.getElementById('subtitle').value, subtitleEn: document.getElementById('subtitleEn').value, points },
+                    content: { badge: document.getElementById('badge').value, mainTitleEn: document.getElementById('mainTitleEn').value, subtitle: document.getElementById('subtitle').value, points },
                     design: { template: state.template, colorScheme: state.colorScheme },
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 await loadHistory();
-            } catch (e) { console.error('Save history error:', e); }
+            } catch (e) {}
         }
 
         async function loadFromHistory(docId) {
@@ -901,49 +779,26 @@
             try {
                 const doc = await db.collection('users').doc(currentUser.uid).collection('history').doc(docId).get();
                 if (!doc.exists) return;
-                const data = doc.data();
-                if (data.mainTitle) document.getElementById('mainTitle').value = data.mainTitle;
-                if (data.speaker) {
-                    document.getElementById('speakerName').value = data.speaker.nameCn || '';
-                    document.getElementById('speakerNameEn').value = data.speaker.nameEn || '';
-                    document.getElementById('speakerTitle').value = data.speaker.title || '';
+                const d = doc.data();
+                if (d.mainTitle) document.getElementById('mainTitle').value = d.mainTitle;
+                if (d.speaker) {
+                    document.getElementById('speakerName').value = d.speaker.nameCn || '';
+                    document.getElementById('speakerNameEn').value = d.speaker.nameEn || '';
+                    document.getElementById('speakerTitle').value = d.speaker.title || '';
                     document.getElementById('achievementsList').innerHTML = '';
-                    (data.speaker.achievements || []).forEach(a => addAchievement(a));
+                    (d.speaker.achievements || []).forEach(a => addAchievement(a));
                 }
-                if (data.content) {
-                    document.getElementById('badge').value = data.content.badge || '';
-                    document.getElementById('mainTitleEn').value = data.content.mainTitleEn || '';
-                    document.getElementById('subtitle').value = data.content.subtitle || '';
-                    document.getElementById('subtitleEn').value = data.content.subtitleEn || '';
+                if (d.content) {
+                    document.getElementById('badge').value = d.content.badge || '';
+                    document.getElementById('mainTitleEn').value = d.content.mainTitleEn || '';
+                    document.getElementById('subtitle').value = d.content.subtitle || '';
                     document.getElementById('pointsList').innerHTML = '';
-                    (data.content.points || []).forEach(p => addPoint(p));
+                    (d.content.points || []).forEach(p => addPoint(p));
                 }
-                if (data.design) { selectTemplate(data.design.template || 1); selectColorScheme(data.design.colorScheme || 1); }
+                if (d.design) { selectTemplate(d.design.template || 1); selectColorScheme(d.design.colorScheme || 1); }
                 updatePreview();
                 showToast('已加载', 'success');
-            } catch (e) { console.error('Load from history error:', e); }
-        }
-
-        async function deleteHistory(docId) {
-            if (!currentUser || !confirm('确定删除？')) return;
-            try { await db.collection('users').doc(currentUser.uid).collection('history').doc(docId).delete(); showToast('已删除', 'success'); await loadHistory(); }
-            catch (e) { showToast('删除失败', 'error'); }
-        }
-
-        async function saveSpeaker() {
-            if (!currentUser) { showToast('请先登录', 'error'); return; }
-            const name = document.getElementById('speakerName').value || document.getElementById('speakerNameEn').value;
-            if (!name) { showToast('请输入姓名', 'error'); return; }
-            const achievements = [];
-            document.querySelectorAll('#achievementsList input').forEach(i => { if (i.value.trim()) achievements.push(i.value.trim()); });
-            try {
-                await db.collection('users').doc(currentUser.uid).collection('speakers').doc(name.toLowerCase().replace(/\s+/g, '_')).set({
-                    name, nameCn: document.getElementById('speakerName').value, nameEn: document.getElementById('speakerNameEn').value,
-                    title: document.getElementById('speakerTitle').value, achievements, photo: state.photo,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                showToast('讲师已保存', 'success');
-            } catch (e) { showToast('保存失败', 'error'); }
+            } catch (e) {}
         }
 
         async function saveAsTemplate() {
@@ -955,11 +810,9 @@
             document.querySelectorAll('#pointsList input').forEach(i => { if (i.value.trim()) points.push(i.value.trim()); });
             try {
                 await db.collection('users').doc(currentUser.uid).collection('templates').add({
-                    name,
-                    speaker: { nameCn: document.getElementById('speakerName').value, nameEn: document.getElementById('speakerNameEn').value, title: document.getElementById('speakerTitle').value, achievements, photo: state.photo },
-                    content: { badge: document.getElementById('badge').value, mainTitle: document.getElementById('mainTitle').value, mainTitleEn: document.getElementById('mainTitleEn').value, subtitle: document.getElementById('subtitle').value, subtitleEn: document.getElementById('subtitleEn').value, points },
-                    meeting: { date: document.getElementById('meetingDate').value, time: document.getElementById('meetingTime').value },
-                    design: { template: state.template, colorScheme: state.colorScheme, customBg: state.customBg },
+                    name, speaker: { nameCn: document.getElementById('speakerName').value, nameEn: document.getElementById('speakerNameEn').value, title: document.getElementById('speakerTitle').value, achievements, photo: state.photo },
+                    content: { badge: document.getElementById('badge').value, mainTitle: document.getElementById('mainTitle').value, mainTitleEn: document.getElementById('mainTitleEn').value, subtitle: document.getElementById('subtitle').value, points },
+                    design: { template: state.template, colorScheme: state.colorScheme },
                     brand: { name: document.getElementById('brandName').value, tagline: document.getElementById('brandTagline').value },
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
@@ -967,7 +820,7 @@
             } catch (e) { showToast('保存失败', 'error'); }
         }
 
-        // ============ UI FUNCTIONS ============
+        // UI Functions
         function switchTab(name) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -987,16 +840,11 @@
             }
         }
 
-        function loadSpeaker() {
-            const id = document.getElementById('speakerSelect').value;
-            if (defaultSpeakers[id]) quickFill(id);
-        }
-
         function addAchievement(val = '') {
             const c = document.getElementById('achievementsList');
             const d = document.createElement('div');
             d.className = 'dynamic-item';
-            d.innerHTML = `<input type="text" placeholder="成就" value="${val}" oninput="updatePreview()"><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
+            d.innerHTML = `<input type="text" placeholder="成就${c.children.length + 1}" value="${val}" oninput="updatePreview()"><button onclick="this.parentElement.remove();updatePreview()">✕</button>`;
             c.appendChild(d);
         }
 
@@ -1004,11 +852,9 @@
             const c = document.getElementById('pointsList');
             const d = document.createElement('div');
             d.className = 'dynamic-item';
-            d.innerHTML = `<input type="text" placeholder="要点" value="${val}" oninput="updatePreview()"><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
+            d.innerHTML = `<input type="text" placeholder="要点${c.children.length + 1}" value="${val}" oninput="updatePreview()"><button onclick="this.parentElement.remove();updatePreview()">✕</button>`;
             c.appendChild(d);
         }
-
-        function removeItem(btn) { btn.parentElement.remove(); updatePreview(); }
 
         function handlePhotoUpload(e) {
             const file = e.target.files[0];
@@ -1016,21 +862,10 @@
             const reader = new FileReader();
             reader.onload = function(ev) {
                 state.photo = ev.target.result;
-                document.getElementById('photoPreviewImg').src = ev.target.result;
-                document.getElementById('photoPreviewImg').style.display = 'block';
+                const img = document.getElementById('photoPreviewImg');
+                img.src = ev.target.result;
+                img.style.display = 'block';
                 document.getElementById('photoPlaceholder').style.display = 'none';
-                updatePreview();
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function handleCustomBgUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                state.customBg = ev.target.result;
-                document.getElementById('customBgPreview').innerHTML = `<img src="${ev.target.result}">`;
                 updatePreview();
             };
             reader.readAsDataURL(file);
@@ -1040,37 +875,27 @@
             state.photoPosition.x = document.getElementById('photoPositionX').value;
             state.photoPosition.y = document.getElementById('photoPositionY').value;
             state.photoScale = document.getElementById('photoScale').value;
-            state.photoRotate = document.getElementById('photoRotate').value;
             state.photoBrightness = document.getElementById('photoBrightness').value;
-            state.photoContrast = document.getElementById('photoContrast').value;
-            state.photoSaturation = document.getElementById('photoSaturation').value;
             document.getElementById('posXVal').textContent = state.photoPosition.x + '%';
             document.getElementById('posYVal').textContent = state.photoPosition.y + '%';
             document.getElementById('scaleVal').textContent = state.photoScale + '%';
-            document.getElementById('rotateVal').textContent = state.photoRotate + '°';
             document.getElementById('brightnessVal').textContent = state.photoBrightness + '%';
-            document.getElementById('contrastVal').textContent = state.photoContrast + '%';
-            document.getElementById('saturationVal').textContent = state.photoSaturation + '%';
             updatePreview();
         }
 
         function resetImageControls() {
             document.getElementById('photoPositionX').value = 50;
-            document.getElementById('photoPositionY').value = 0;
+            document.getElementById('photoPositionY').value = 20;
             document.getElementById('photoScale').value = 100;
-            document.getElementById('photoRotate').value = 0;
             document.getElementById('photoBrightness').value = 100;
-            document.getElementById('photoContrast').value = 100;
-            document.getElementById('photoSaturation').value = 100;
-            state.flipH = false; state.flipV = false;
+            state.flipH = false;
             document.getElementById('flipHBtn').classList.remove('active');
-            document.getElementById('flipVBtn').classList.remove('active');
             updateImageControls();
         }
 
         function toggleFlip(dir) {
-            if (dir === 'h') { state.flipH = !state.flipH; document.getElementById('flipHBtn').classList.toggle('active', state.flipH); }
-            else { state.flipV = !state.flipV; document.getElementById('flipVBtn').classList.toggle('active', state.flipV); }
+            state.flipH = !state.flipH;
+            document.getElementById('flipHBtn').classList.toggle('active', state.flipH);
             updatePreview();
         }
 
@@ -1088,115 +913,113 @@
             updatePreview();
         }
 
-        async function onChineseNameInput() {
+        function onChineseNameInput() {
             const cn = document.getElementById('speakerName').value;
             const en = document.getElementById('speakerNameEn');
             if (cn && !en.dataset.userEdited) { const t = translateName(cn); if (t) en.value = t; }
             updatePreview();
         }
 
-        async function onMainTitleInput() {
+        function onMainTitleInput() {
             const cn = document.getElementById('mainTitle').value;
             const en = document.getElementById('mainTitleEn');
             if (cn && !en.dataset.userEdited) { const t = translateTextLocal(cn); if (t) en.value = t; }
             updatePreview();
         }
 
-        async function onSubtitleInput() {
-            const cn = document.getElementById('subtitle').value;
-            const en = document.getElementById('subtitleEn');
-            if (cn && !en.dataset.userEdited) { const t = translateTextLocal(cn); if (t) en.value = t; }
-            updatePreview();
-        }
-
-        // ============ PREVIEW UPDATE ============
+        // Preview Update - 居中对称布局
         function updatePreview() {
             const scheme = colorSchemes[state.colorScheme];
+            const bg = backgrounds[state.template - 1] || backgrounds[0];
             const poster = document.getElementById('posterPreview');
-            const speakerName = document.getElementById('speakerName').value || 'Lisa Yao';
-            const speakerNameEn = document.getElementById('speakerNameEn').value || 'Lisa Yao';
+
+            const speakerName = document.getElementById('speakerName').value || '讲师姓名';
+            const speakerNameEn = document.getElementById('speakerNameEn').value || 'Speaker Name';
             const speakerTitle = document.getElementById('speakerTitle').value || '资深行业导师';
-            const badge = document.getElementById('badge').value || '限时直播';
-            const mainTitle = document.getElementById('mainTitle').value || '销售成功秘籍';
-            const mainTitleEn = document.getElementById('mainTitleEn').value || 'SALES SUCCESS TIPS';
+            const badge = document.getElementById('badge').value || '专业培训';
+            const mainTitle = document.getElementById('mainTitle').value || '成功宝典';
+            const mainTitleEn = document.getElementById('mainTitleEn').value || 'SUCCESS SECRETS';
             const subtitle = document.getElementById('subtitle').value || '';
-            const subtitleEn = document.getElementById('subtitleEn').value || '';
             const brandName = document.getElementById('brandName').value || 'HENGSHENG';
             const brandTagline = document.getElementById('brandTagline').value || '共创财富 · 成就未来';
-            const achievements = [], points = [];
-            document.querySelectorAll('#achievementsList input').forEach(i => { if (i.value.trim()) achievements.push(i.value.trim()); });
-            document.querySelectorAll('#pointsList input').forEach(i => { if (i.value.trim()) points.push(i.value.trim()); });
 
+            const achievements = [];
+            document.querySelectorAll('#achievementsList input').forEach(i => { if (i.value.trim()) achievements.push(i.value.trim()); });
+
+            // Time formatting
             const meetingDate = document.getElementById('meetingDate').value;
             const meetingTime = document.getElementById('meetingTime').value;
-            const zoomId = document.getElementById('zoomId').value;
-            let timeDisplay = '';
+            let dateStr = '', timeStr = '';
             if (meetingDate && meetingTime) {
                 const dt = new Date(meetingDate + 'T' + meetingTime);
+                const options = { month: 'long', day: 'numeric', weekday: 'long' };
+                dateStr = dt.toLocaleDateString('zh-CN', options);
                 const caTime = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
                 const bjHour = (dt.getHours() + 16) % 24;
                 const nyHour = (dt.getHours() + 3) % 24;
-                const dateStr = dt.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' });
-                timeDisplay = `${dateStr} | 加州 ${caTime} | 北京 ${bjHour}:${String(dt.getMinutes()).padStart(2,'0')}`;
+                timeStr = `加州 ${caTime} | 北京 ${bjHour}:${String(dt.getMinutes()).padStart(2,'0')} | 纽约 ${nyHour > 12 ? nyHour-12 : nyHour}:${String(dt.getMinutes()).padStart(2,'0')} ${nyHour >= 12 ? 'PM' : 'AM'}`;
             }
 
-            let bgStyle = state.customBg ? `background-image: url(${state.customBg});` :
-                `background: ${['linear-gradient(135deg, #1a1a2e, #16213e)', 'linear-gradient(135deg, #0d2137, #1a365d)', 'linear-gradient(135deg, #1a0a2e, #2d1b4e)', 'linear-gradient(135deg, #0a1a2e, #1a3a5c)', 'linear-gradient(135deg, #1a2e1a, #2d4a2d)', 'linear-gradient(135deg, #2e1a1a, #4a2d2d)'][state.template - 1]};`;
-
-            let photoTransform = `scale(${state.photoScale/100}) rotate(${state.photoRotate}deg)`;
+            // Photo styles
+            let photoTransform = `scale(${state.photoScale/100})`;
             if (state.flipH) photoTransform += ' scaleX(-1)';
-            if (state.flipV) photoTransform += ' scaleY(-1)';
-            const photoFilter = `brightness(${state.photoBrightness}%) contrast(${state.photoContrast}%) saturate(${state.photoSaturation}%)`;
-
-            const photoHtml = state.photo ?
-                `<img src="${state.photo}" class="speaker-photo" style="object-position: ${state.photoPosition.x}% ${state.photoPosition.y}%; transform: ${photoTransform}; filter: ${photoFilter};">` :
-                `<div class="speaker-photo" style="background: linear-gradient(135deg, ${scheme.accent}40, ${scheme.accent}20); display: flex; align-items: center; justify-content: center; font-size: 4vmin;">📷</div>`;
+            const photoFilter = `brightness(${state.photoBrightness}%)`;
+            const photoStyle = state.photo ?
+                `background-image:url(${state.photo});background-size:cover;background-position:${state.photoPosition.x}% ${state.photoPosition.y}%;transform:${photoTransform};filter:${photoFilter};` :
+                `background:linear-gradient(135deg, ${scheme.accent}40, ${scheme.accent}20);display:flex;align-items:center;justify-content:center;font-size:5vmin;`;
 
             poster.innerHTML = `
-                <div class="poster-bg" style="${bgStyle}"></div>
-                <div class="poster-overlay" style="background: ${scheme.gradient}"></div>
+                <div class="poster-bg" style="background:${bg.gradient};"></div>
+                <div class="poster-overlay" style="background:linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.2) 70%, rgba(0,0,0,0.5) 100%);"></div>
                 <div class="poster-content">
-                    <div class="poster-badge" style="background: ${scheme.accent}; color: ${scheme.primary};">${badge}</div>
+                    <div class="poster-header">
+                        <div class="poster-badge" style="background:${scheme.accent};color:${scheme.primary};">${badge}</div>
+                    </div>
+
                     <div class="poster-titles">
-                        <div class="poster-main-title" style="color: ${scheme.accent};">${mainTitle}</div>
+                        <div class="poster-main-title" style="color:${scheme.accent};">${mainTitle}</div>
                         <div class="poster-main-title-en">${mainTitleEn}</div>
                         ${subtitle ? `<div class="poster-subtitle">${subtitle}</div>` : ''}
-                        ${subtitleEn ? `<div class="poster-subtitle-en">${subtitleEn}</div>` : ''}
                     </div>
+
                     <div class="poster-speaker">
-                        <div class="speaker-photo-container">${photoHtml}</div>
+                        <div class="speaker-photo-container">
+                            <div class="speaker-photo" style="${photoStyle}">${state.photo ? '' : '📷'}</div>
+                        </div>
                         <div class="speaker-info">
-                            <div class="speaker-name-cn" style="color: ${scheme.accent};">${speakerName}</div>
+                            <div class="speaker-name-cn" style="color:${scheme.accent};">${speakerName}</div>
                             <div class="speaker-name-en">${speakerNameEn}</div>
                             <div class="speaker-title">${speakerTitle}</div>
-                            <ul class="speaker-achievements">${achievements.map(a => `<li>${a}</li>`).join('')}</ul>
+                            ${achievements.length ? `<ul class="speaker-achievements">${achievements.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
                         </div>
                     </div>
-                    ${points.length ? `<div class="poster-points">${points.map((p,i) => `<div class="poster-point"><div class="point-icon" style="background:${scheme.accent};color:${scheme.primary};">${i+1}</div><div class="point-text">${p}</div></div>`).join('')}</div>` : ''}
+
                     <div class="poster-meeting-info">
-                        ${timeDisplay ? `<div class="meeting-row"><span class="meeting-icon">📅</span><span class="meeting-value">${timeDisplay}</span></div>` : ''}
-                        ${zoomId ? `<div class="meeting-row"><span class="meeting-icon">🔗</span><span class="meeting-label">Zoom ID:</span><span class="meeting-value">${zoomId}</span></div>` : ''}
+                        ${dateStr ? `<div class="meeting-title">📅 ${dateStr}</div>` : ''}
+                        ${timeStr ? `<div class="meeting-time-zones">${timeStr}</div>` : ''}
+                        <div class="meeting-platform">Zoom 在线会议</div>
                     </div>
+
                     <div class="poster-footer">
-                        <div class="poster-logo" style="color: ${scheme.accent};">${brandName}</div>
+                        <div class="poster-logo" style="color:${scheme.accent};">${brandName}</div>
                         <div class="poster-tagline">${brandTagline}</div>
                     </div>
-                </div>`;
+                </div>
+            `;
         }
 
-        // ============ EXPORT FUNCTIONS ============
-        async function downloadPoster(width = 1080, height = 1920) {
-            showLoading('生成海报中...');
+        // Export Functions
+        async function downloadPoster(w = 1080, h = 1920) {
+            showLoading('生成高清海报...');
             try {
                 const poster = document.getElementById('posterPreview');
                 const canvas = await html2canvas(poster, { scale: 3, useCORS: true, allowTaint: true, backgroundColor: null });
-                const resizedCanvas = document.createElement('canvas');
-                resizedCanvas.width = width; resizedCanvas.height = height;
-                const ctx = resizedCanvas.getContext('2d');
-                ctx.drawImage(canvas, 0, 0, width, height);
+                const resized = document.createElement('canvas');
+                resized.width = w; resized.height = h;
+                resized.getContext('2d').drawImage(canvas, 0, 0, w, h);
                 const link = document.createElement('a');
-                link.download = `海报_${document.getElementById('mainTitle').value || 'poster'}_${width}x${height}.png`;
-                link.href = resizedCanvas.toDataURL('image/png');
+                link.download = `海报_${document.getElementById('mainTitle').value || 'poster'}_${w}x${h}.png`;
+                link.href = resized.toDataURL('image/png');
                 link.click();
                 hideLoading();
                 showToast('下载成功！', 'success');
@@ -1206,7 +1029,7 @@
 
         async function batchExport() {
             const selected = document.querySelectorAll('.batch-option.selected');
-            if (!selected.length) { showToast('请选择至少一个尺寸', 'error'); return; }
+            if (!selected.length) { showToast('请选择尺寸', 'error'); return; }
             showLoading('批量导出中...');
             for (let opt of selected) {
                 const [w, h] = opt.dataset.size.split('x').map(Number);
@@ -1214,56 +1037,29 @@
                 await new Promise(r => setTimeout(r, 500));
             }
             hideLoading();
-            showToast(`已导出 ${selected.length} 个文件`, 'success');
         }
 
         function copyNotification() {
-            const text = `📢 直播预告\n\n【${document.getElementById('mainTitle').value || '销售成功秘籍'}】\n\n🎤 主讲：${document.getElementById('speakerName').value || 'Lisa Yao'}\n📅 时间：${document.getElementById('meetingDate').value} ${document.getElementById('meetingTime').value} (加州)\n${document.getElementById('zoomId').value ? '🔗 Zoom ID: ' + document.getElementById('zoomId').value : ''}\n\n期待您的参与！`;
+            const text = `📢 培训预告\n\n【${document.getElementById('mainTitle').value || '成功宝典'}】\n\n🎤 主讲：${document.getElementById('speakerName').value || '讲师'}\n📅 ${document.getElementById('meetingDate').value} ${document.getElementById('meetingTime').value} (加州时间)\n🔗 ${document.getElementById('zoomLink').value || 'Zoom在线会议'}\n\n期待您的参与！🎉`;
             navigator.clipboard.writeText(text).then(() => showToast('已复制', 'success')).catch(() => showToast('复制失败', 'error'));
         }
 
-        function openEmailClient() {
-            const subject = encodeURIComponent(`直播预告：${document.getElementById('mainTitle').value || ''}`);
-            const body = encodeURIComponent(`您好，\n\n诚邀您参加【${document.getElementById('mainTitle').value}】直播。\n\n详情见海报。`);
-            window.open(`mailto:?subject=${subject}&body=${body}`);
-        }
-
-        // ============ MODALS ============
+        // Modals
         async function openSpeakerLibrary() {
             document.getElementById('speakerModal').classList.add('show');
             const list = document.getElementById('speakerLibraryList');
             let html = '';
             Object.entries(defaultSpeakers).forEach(([id, s]) => {
-                html += `<div class="speaker-library-item" onclick="quickFill('${id}');closeModal('speakerModal');">
-                    <div class="speaker-library-photo" style="background:linear-gradient(135deg,#d4af37,#f4d03f);display:flex;align-items:center;justify-content:center;">👤</div>
-                    <div class="speaker-library-info"><div class="speaker-library-name">${s.name}</div><div class="speaker-library-title">${s.title.substring(0,25)}...</div></div>
-                </div>`;
+                html += `<div class="speaker-library-item" onclick="quickFill('${id}');closeModal('speakerModal');"><div class="speaker-library-photo" style="background:#d4af37;"></div><div class="speaker-library-info"><div class="speaker-library-name">${s.name}</div><div class="speaker-library-title">${s.title.substring(0,30)}...</div></div></div>`;
             });
             if (currentUser) {
                 const snap = await db.collection('users').doc(currentUser.uid).collection('speakers').get();
                 snap.forEach(doc => {
                     const d = doc.data();
-                    html += `<div class="speaker-library-item" onclick="loadSpeakerFromDb('${doc.id}');closeModal('speakerModal');">
-                        <div class="speaker-library-photo" style="${d.photo ? 'background-image:url('+d.photo+')' : 'background:#ddd'}"></div>
-                        <div class="speaker-library-info"><div class="speaker-library-name">${d.name}</div><div class="speaker-library-title">${(d.title||'').substring(0,25)}</div></div>
-                    </div>`;
+                    html += `<div class="speaker-library-item" onclick="loadSpeakerFromCloud('${doc.id}');closeModal('speakerModal');"><div class="speaker-library-photo" style="${d.photo ? 'background-image:url('+d.photo+');background-size:cover;' : 'background:#ddd;'}"></div><div class="speaker-library-info"><div class="speaker-library-name">${d.name}</div><div class="speaker-library-title">${(d.title||'').substring(0,30)}</div></div></div>`;
                 });
             }
             list.innerHTML = html || '<div style="padding:20px;text-align:center;color:#888;">暂无讲师</div>';
-        }
-
-        async function loadSpeakerFromDb(docId) {
-            if (!currentUser) return;
-            const doc = await db.collection('users').doc(currentUser.uid).collection('speakers').doc(docId).get();
-            if (!doc.exists) return;
-            const d = doc.data();
-            document.getElementById('speakerName').value = d.nameCn || '';
-            document.getElementById('speakerNameEn').value = d.nameEn || '';
-            document.getElementById('speakerTitle').value = d.title || '';
-            document.getElementById('achievementsList').innerHTML = '';
-            (d.achievements || []).forEach(a => addAchievement(a));
-            if (d.photo) { state.photo = d.photo; document.getElementById('photoPreviewImg').src = d.photo; document.getElementById('photoPreviewImg').style.display = 'block'; document.getElementById('photoPlaceholder').style.display = 'none'; }
-            updatePreview();
         }
 
         async function openTemplateLibrary() {
@@ -1274,10 +1070,7 @@
             let html = '';
             snap.forEach(doc => {
                 const d = doc.data();
-                html += `<div class="speaker-library-item" onclick="loadTemplateFromDb('${doc.id}');closeModal('templateModal');">
-                    <div class="speaker-library-photo" style="background:linear-gradient(135deg,#1a1a2e,#d4af37);"></div>
-                    <div class="speaker-library-info"><div class="speaker-library-name">${d.name}</div><div class="speaker-library-title">${d.content?.mainTitle || ''}</div></div>
-                </div>`;
+                html += `<div class="speaker-library-item" onclick="loadTemplateFromDb('${doc.id}');closeModal('templateModal');"><div class="speaker-library-photo" style="background:linear-gradient(135deg,#1a1a2e,#d4af37);"></div><div class="speaker-library-info"><div class="speaker-library-name">${d.name}</div><div class="speaker-library-title">${d.content?.mainTitle || ''}</div></div></div>`;
             });
             list.innerHTML = html || '<div style="padding:20px;text-align:center;color:#888;">暂无模板</div>';
         }
@@ -1287,56 +1080,81 @@
             const doc = await db.collection('users').doc(currentUser.uid).collection('templates').doc(docId).get();
             if (!doc.exists) return;
             const d = doc.data();
-            if (d.speaker) { document.getElementById('speakerName').value = d.speaker.nameCn || ''; document.getElementById('speakerNameEn').value = d.speaker.nameEn || ''; document.getElementById('speakerTitle').value = d.speaker.title || ''; document.getElementById('achievementsList').innerHTML = ''; (d.speaker.achievements || []).forEach(a => addAchievement(a)); if (d.speaker.photo) { state.photo = d.speaker.photo; document.getElementById('photoPreviewImg').src = d.speaker.photo; document.getElementById('photoPreviewImg').style.display = 'block'; document.getElementById('photoPlaceholder').style.display = 'none'; } }
-            if (d.content) { document.getElementById('badge').value = d.content.badge || ''; document.getElementById('mainTitle').value = d.content.mainTitle || ''; document.getElementById('mainTitleEn').value = d.content.mainTitleEn || ''; document.getElementById('subtitle').value = d.content.subtitle || ''; document.getElementById('subtitleEn').value = d.content.subtitleEn || ''; document.getElementById('pointsList').innerHTML = ''; (d.content.points || []).forEach(p => addPoint(p)); }
-            if (d.meeting) { document.getElementById('meetingDate').value = d.meeting.date || ''; document.getElementById('meetingTime').value = d.meeting.time || ''; }
-            if (d.design) { selectTemplate(d.design.template || 1); selectColorScheme(d.design.colorScheme || 1); if (d.design.customBg) { state.customBg = d.design.customBg; document.getElementById('customBgPreview').innerHTML = `<img src="${d.design.customBg}">`; } }
+            if (d.speaker) {
+                document.getElementById('speakerName').value = d.speaker.nameCn || '';
+                document.getElementById('speakerNameEn').value = d.speaker.nameEn || '';
+                document.getElementById('speakerTitle').value = d.speaker.title || '';
+                document.getElementById('achievementsList').innerHTML = '';
+                (d.speaker.achievements || []).forEach(a => addAchievement(a));
+                if (d.speaker.photo) { state.photo = d.speaker.photo; document.getElementById('photoPreviewImg').src = d.speaker.photo; document.getElementById('photoPreviewImg').style.display = 'block'; document.getElementById('photoPlaceholder').style.display = 'none'; }
+            }
+            if (d.content) {
+                document.getElementById('badge').value = d.content.badge || '';
+                document.getElementById('mainTitle').value = d.content.mainTitle || '';
+                document.getElementById('mainTitleEn').value = d.content.mainTitleEn || '';
+                document.getElementById('subtitle').value = d.content.subtitle || '';
+                document.getElementById('pointsList').innerHTML = '';
+                (d.content.points || []).forEach(p => addPoint(p));
+            }
+            if (d.design) { selectTemplate(d.design.template || 1); selectColorScheme(d.design.colorScheme || 1); }
             if (d.brand) { document.getElementById('brandName').value = d.brand.name || 'HENGSHENG'; document.getElementById('brandTagline').value = d.brand.tagline || ''; }
             updatePreview();
             showToast('模板已加载', 'success');
         }
 
-        function openApiSettings() { document.getElementById('apiModal').classList.add('show'); }
         function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
-        // ============ UTILITIES ============
+        // Utilities
         function showToast(msg, type = '') { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show ' + type; setTimeout(() => t.classList.remove('show'), 3000); }
         function showLoading(msg = '加载中...') { document.getElementById('loadingText').textContent = msg; document.getElementById('loadingOverlay').classList.add('show'); }
         function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
 
-        // ============ INIT ============
+        // Init
         function initUI() {
+            // Templates
             const tg = document.getElementById('templateGrid');
-            for (let i = 1; i <= 6; i++) {
+            backgrounds.forEach((bg, i) => {
                 const b = document.createElement('div');
-                b.className = 'template-btn' + (i === 1 ? ' active' : '');
-                b.dataset.template = i;
-                b.style.background = ['linear-gradient(135deg,#1a1a2e,#d4af37)', 'linear-gradient(135deg,#0d2137,#c9a227)', 'linear-gradient(135deg,#1a0a2e,#9b59b6)', 'linear-gradient(135deg,#0a1a2e,#3498db)', 'linear-gradient(135deg,#1a2e1a,#27ae60)', 'linear-gradient(135deg,#2e1a1a,#e74c3c)'][i-1];
-                b.innerHTML = `<span>模板${i}</span>`;
-                b.onclick = () => selectTemplate(i);
+                b.className = 'template-btn' + (i === 0 ? ' active' : '');
+                b.dataset.template = i + 1;
+                b.style.background = bg.gradient;
+                b.innerHTML = `<span>${bg.name}</span>`;
+                b.onclick = () => selectTemplate(i + 1);
                 tg.appendChild(b);
-            }
+            });
+
+            // Color schemes
             const cs = document.getElementById('colorSchemes');
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 6; i++) {
                 const b = document.createElement('div');
                 b.className = 'color-scheme-btn' + (i === 1 ? ' active' : '');
                 b.dataset.scheme = i;
                 b.onclick = () => selectColorScheme(i);
                 cs.appendChild(b);
             }
-            const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+
+            // Default date
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
             document.getElementById('meetingDate').value = tomorrow.toISOString().split('T')[0];
-            document.getElementById('meetingTime').value = '19:00';
-            ['speakerNameEn', 'mainTitleEn', 'subtitleEn'].forEach(id => {
+
+            // Mark user edited
+            ['speakerNameEn', 'mainTitleEn'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', function() { this.dataset.userEdited = 'true'; });
             });
-            document.querySelectorAll('.batch-option').forEach(opt => {
-                opt.onclick = () => opt.classList.toggle('selected');
-            });
+
+            // Batch options
+            document.querySelectorAll('.batch-option').forEach(opt => { opt.onclick = () => opt.classList.toggle('selected'); });
+
+            // Add initial items
+            addAchievement();
+            addPoint();
+
             updatePreview();
         }
 
+        // Auth State
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('loadingOverlay').classList.add('show');
             auth.onAuthStateChanged(async user => {
