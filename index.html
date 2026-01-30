@@ -10,94 +10,123 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;600;700;900&family=Playfair+Display:wght@400;600;700;900&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #d4af37;
+            --primary-light: #f4d03f;
+            --dark-bg: #1a1a2e;
+            --text-dark: #1a1a2e;
+            --text-light: #ffffff;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Noto Sans SC', sans-serif; background: linear-gradient(135deg, #0a0f1a 0%, #1a1a2e 100%); min-height: 100vh; color: #333; }
 
         /* Loading & Auth */
         .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(26,26,46,0.95); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         .loading-overlay.show { display: flex; }
-        .loading-spinner { width: 50px; height: 50px; border: 4px solid #333; border-top-color: #d4af37; border-radius: 50%; animation: spin 1s linear infinite; }
+        .loading-spinner { width: 50px; height: 50px; border: 4px solid #333; border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-text { color: #d4af37; margin-top: 20px; font-size: 16px; }
+        .loading-text { color: var(--primary-color); margin-top: 20px; font-size: 16px; }
 
         .auth-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         .auth-box { background: #fff; padding: 50px 40px; border-radius: 20px; box-shadow: 0 25px 80px rgba(0,0,0,0.5); text-align: center; max-width: 420px; width: 100%; }
-        .auth-box h1 { font-family: 'Montserrat', sans-serif; font-weight: 800; color: #1a1a2e; font-size: 24px; margin-bottom: 8px; }
-        .auth-box .subtitle { color: #d4af37; font-weight: 600; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 35px; }
+        .auth-box h1 { font-family: 'Montserrat', sans-serif; font-weight: 800; color: var(--text-dark); font-size: 24px; margin-bottom: 8px; }
+        .auth-box .subtitle { color: var(--primary-color); font-weight: 600; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 35px; }
         .auth-tabs { display: flex; margin-bottom: 25px; border-radius: 12px; overflow: hidden; border: 2px solid #e8e8e8; }
-        .auth-tab { flex: 1; padding: 12px; border: none; background: transparent; color: #888; font-size: 14px; font-weight: 600; cursor: pointer; }
-        .auth-tab.active { background: linear-gradient(135deg, #d4af37, #f4d03f); color: #1a1a2e; }
+        .auth-tab { flex: 1; padding: 12px; border: none; background: transparent; color: #888; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .auth-tab.active { background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); color: var(--text-dark); }
         .auth-form { display: none; }
         .auth-form.active { display: block; }
         .auth-error { padding: 12px; border-radius: 10px; margin-bottom: 15px; font-size: 14px; display: none; background: #fee; color: #c00; border: 1px solid #fcc; }
         .auth-error.show { display: block; }
-        .auth-box input { width: 100%; padding: 16px 20px; border: 2px solid #e8e8e8; border-radius: 12px; font-size: 16px; margin-bottom: 15px; }
-        .auth-box input:focus { outline: none; border-color: #d4af37; }
-        .auth-box button.auth-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #d4af37, #f4d03f); border: none; border-radius: 12px; color: #1a1a2e; font-size: 15px; font-weight: 700; cursor: pointer; }
+        .auth-box input { width: 100%; padding: 16px 20px; border: 2px solid #e8e8e8; border-radius: 12px; font-size: 16px; margin-bottom: 15px; transition: border-color 0.3s; }
+        .auth-box input:focus { outline: none; border-color: var(--primary-color); }
+        .auth-box button.auth-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); border: none; border-radius: 12px; color: var(--text-dark); font-size: 15px; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .auth-box button.auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(212,175,55,0.4); }
 
         /* App Layout */
         .app-container { display: none; min-height: 100vh; }
-        .app-header { background: linear-gradient(135deg, #d4af37, #f4d03f); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 100; }
-        .app-header h1 { font-family: 'Montserrat', sans-serif; font-weight: 800; color: #1a1a2e; font-size: 16px; }
-        .header-user { font-size: 13px; color: #1a1a2e; }
+        .app-header { background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .app-header h1 { font-family: 'Montserrat', sans-serif; font-weight: 800; color: var(--text-dark); font-size: 16px; }
+        .header-user { font-size: 13px; color: var(--text-dark); }
         .header-buttons { display: flex; gap: 8px; }
-        .header-btn { padding: 8px 16px; border: 2px solid #1a1a2e; background: transparent; color: #1a1a2e; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; }
-        .header-btn:hover { background: #1a1a2e; color: #d4af37; }
+        .header-btn { padding: 8px 16px; border: 2px solid var(--text-dark); background: transparent; color: var(--text-dark); border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.3s; }
+        .header-btn:hover { background: var(--text-dark); color: var(--primary-color); }
         .header-btn.logout-btn { border-color: #c00; color: #c00; }
         .header-btn.logout-btn:hover { background: #c00; color: #fff; }
 
         .main-content { display: flex; flex-wrap: wrap; padding: 20px; gap: 20px; max-width: 1800px; margin: 0 auto; }
-        .form-section { flex: 0 0 400px; background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 15px 50px rgba(0,0,0,0.3); max-height: calc(100vh - 100px); overflow-y: auto; }
+        .form-section { flex: 0 0 420px; background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 15px 50px rgba(0,0,0,0.3); max-height: calc(100vh - 100px); overflow-y: auto; }
         .form-section::-webkit-scrollbar { width: 6px; }
-        .form-section::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 3px; }
+        .form-section::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 3px; }
 
-        .preview-section { flex: 1; min-width: 500px; display: flex; flex-direction: column; gap: 15px; }
+        .preview-section { flex: 1; min-width: 520px; display: flex; flex-direction: column; gap: 15px; }
 
         /* Tabs */
         .tab-container { display: flex; gap: 4px; margin-bottom: 15px; background: #f5f5f5; padding: 4px; border-radius: 12px; }
-        .tab-btn { flex: 1; padding: 10px 6px; border: none; background: transparent; color: #888; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; }
-        .tab-btn.active { background: #1a1a2e; color: #d4af37; }
+        .tab-btn { flex: 1; padding: 10px 6px; border: none; background: transparent; color: #888; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; transition: all 0.3s; }
+        .tab-btn.active { background: var(--text-dark); color: var(--primary-color); }
+
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
         /* Form Styles */
-        .form-section-title { font-size: 13px; font-weight: 700; color: #1a1a2e; margin: 18px 0 10px 0; padding-bottom: 6px; border-bottom: 2px solid #d4af37; }
+        .form-section-title { font-size: 13px; font-weight: 700; color: var(--text-dark); margin: 18px 0 10px 0; padding-bottom: 6px; border-bottom: 2px solid var(--primary-color); display: flex; align-items: center; gap: 8px; }
         .form-section-title:first-child { margin-top: 0; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 4px; font-weight: 600; color: #444; font-size: 12px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 2px solid #e8e8e8; border-radius: 8px; font-size: 14px; }
-        .form-group input:focus, .form-group select:focus { outline: none; border-color: #d4af37; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 2px solid #e8e8e8; border-radius: 8px; font-size: 14px; transition: border-color 0.3s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); }
         .form-row { display: flex; gap: 10px; }
         .form-row .form-group { flex: 1; }
-        .form-hint { font-size: 11px; color: #888; margin-top: 4px; }
 
         /* Photo Upload */
-        .photo-upload-area { width: 100%; height: 150px; border: 3px dashed #d4af37; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; background: #fffbeb; overflow: hidden; }
+        .photo-upload-area { width: 100%; height: 150px; border: 3px dashed var(--primary-color); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; background: #fffbeb; overflow: hidden; transition: all 0.3s; }
+        .photo-upload-area:hover { background: #fff3cd; transform: scale(1.02); }
         .photo-upload-area img { width: 100%; height: 100%; object-fit: contain; }
         .photo-upload-area .upload-text { text-align: center; color: #b8960c; }
         .photo-upload-area .upload-text span { display: block; font-size: 36px; }
 
         /* Action Buttons */
-        .action-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px; margin-top: 8px; }
-        .action-btn.primary { background: linear-gradient(135deg, #d4af37, #f4d03f); color: #1a1a2e; }
-        .action-btn.secondary { background: #1a1a2e; color: #d4af37; }
+        .action-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px; margin-top: 8px; transition: all 0.3s; }
+        .action-btn:hover { transform: translateY(-2px); }
+        .action-btn.primary { background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); color: var(--text-dark); }
+        .action-btn.secondary { background: var(--text-dark); color: var(--primary-color); }
         .action-btn.removebg { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
 
         /* Speaker Quick Select */
         .speaker-select { display: flex; gap: 8px; margin-bottom: 12px; }
         .speaker-select select { flex: 1; padding: 10px; border: 2px solid #e8e8e8; border-radius: 8px; }
-        .speaker-select button { padding: 10px 15px; background: #1a1a2e; color: #d4af37; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .speaker-select button { padding: 10px 15px; background: var(--text-dark); color: var(--primary-color); border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .speaker-select button:hover { background: #2d2d4e; }
 
-        /* Background Grid */
-        .bg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-        .bg-option { aspect-ratio: 1; border-radius: 8px; cursor: pointer; border: 3px solid transparent; position: relative; }
-        .bg-option.active { border-color: #d4af37; }
-        .bg-option span { position: absolute; bottom: 2px; left: 2px; right: 2px; font-size: 9px; color: white; text-align: center; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+        /* Background & Color Grid */
+        .option-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+        .option-item { aspect-ratio: 1; border-radius: 8px; cursor: pointer; border: 3px solid transparent; position: relative; transition: all 0.3s; }
+        .option-item:hover { transform: scale(1.05); }
+        .option-item.active { border-color: var(--primary-color); box-shadow: 0 4px 15px rgba(212,175,55,0.5); }
+        .option-item span { position: absolute; bottom: 2px; left: 2px; right: 2px; font-size: 8px; color: white; text-align: center; text-shadow: 0 1px 3px rgba(0,0,0,0.9); background: rgba(0,0,0,0.5); border-radius: 4px; padding: 2px; }
+
+        /* Text Lines Editor */
+        .text-lines-editor { background: #f8f9fa; border-radius: 12px; padding: 15px; margin-top: 10px; }
+        .text-line-item { display: flex; gap: 8px; margin-bottom: 8px; }
+        .text-line-item input { flex: 1; padding: 10px; border: 2px solid #e8e8e8; border-radius: 8px; font-size: 13px; }
+        .text-line-item input:focus { outline: none; border-color: var(--primary-color); }
+        .text-line-item .remove-btn { width: 36px; height: 36px; background: #fee; color: #c00; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; transition: all 0.3s; }
+        .text-line-item .remove-btn:hover { background: #c00; color: white; }
+        .add-line-btn { width: 100%; padding: 10px; background: var(--text-dark); color: var(--primary-color); border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 8px; transition: all 0.3s; }
+        .add-line-btn:hover { background: #2d2d4e; }
+
+        /* Meeting Info Preview Box */
+        .meeting-preview-box { background: #f8f9fa; border: 2px solid var(--primary-color); border-radius: 12px; padding: 15px; margin-top: 15px; }
+        .meeting-preview-box h4 { font-size: 13px; color: var(--text-dark); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .meeting-preview-content { font-size: 12px; line-height: 1.8; color: #333; }
+        .meeting-preview-content .label { color: #888; }
+        .meeting-preview-content .value { font-weight: 600; color: var(--text-dark); }
 
         /* Poster Preview Container */
-        .poster-container { background: #1a1a2e; border-radius: 16px; padding: 20px; display: flex; justify-content: center; align-items: flex-start; min-height: 600px; }
+        .poster-container { background: var(--text-dark); border-radius: 16px; padding: 20px; display: flex; justify-content: center; align-items: flex-start; min-height: 600px; }
 
-        /* Poster Canvas - Draggable Elements */
+        /* Poster Canvas */
         .poster-preview {
             width: 500px;
             height: 700px;
@@ -113,136 +142,57 @@
             user-select: none;
             transition: box-shadow 0.2s;
         }
-        .draggable:hover {
-            outline: 2px dashed #d4af37;
-        }
-        .draggable.dragging {
-            z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        .draggable:hover { outline: 2px dashed var(--primary-color); }
+        .draggable.dragging { z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
         /* Resize Handle */
         .resize-handle {
             position: absolute;
             width: 16px;
             height: 16px;
-            background: #d4af37;
+            background: var(--primary-color);
             border-radius: 50%;
             right: -8px;
             bottom: -8px;
             cursor: se-resize;
             display: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
         .draggable:hover .resize-handle { display: block; }
 
         /* Poster Elements */
-        .poster-photo-container {
-            width: 160px;
-            height: 160px;
-            left: 170px;
-            top: 80px;
-        }
-        .poster-photo {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 4px solid #d4af37;
-            object-fit: cover;
-            background: rgba(255,255,255,0.1);
-        }
+        .poster-photo-container { width: 150px; height: 150px; left: 175px; top: 60px; }
+        .poster-photo { width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--primary-color); object-fit: cover; background: rgba(255,255,255,0.1); }
 
-        .poster-name {
-            left: 50px;
-            top: 260px;
-            width: 400px;
-            text-align: center;
-            font-family: 'Noto Serif SC', serif;
-            font-size: 32px;
-            font-weight: 700;
-            color: #d4af37;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
+        .poster-name { left: 50px; top: 230px; width: 400px; text-align: center; font-family: 'Noto Serif SC', serif; font-size: 32px; font-weight: 700; color: var(--primary-color); text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .poster-title { left: 50px; top: 280px; width: 400px; text-align: center; font-size: 15px; color: rgba(255,255,255,0.9); }
+        .poster-topic { left: 30px; top: 330px; width: 440px; text-align: center; font-family: 'Noto Serif SC', serif; font-size: 20px; font-weight: 600; color: #fff; line-height: 1.5; padding: 15px; background: rgba(212,175,55,0.12); border-left: 4px solid var(--primary-color); border-right: 4px solid var(--primary-color); border-radius: 8px; }
 
-        .poster-title {
-            left: 50px;
-            top: 310px;
-            width: 400px;
-            text-align: center;
-            font-size: 16px;
-            color: rgba(255,255,255,0.9);
-        }
+        /* Extra Text Lines */
+        .poster-extra-lines { left: 30px; top: 430px; width: 440px; text-align: center; font-size: 14px; color: rgba(255,255,255,0.9); line-height: 1.8; }
+        .poster-extra-lines .extra-line { margin-bottom: 4px; }
 
-        .poster-topic {
-            left: 30px;
-            top: 370px;
-            width: 440px;
-            text-align: center;
-            font-family: 'Noto Serif SC', serif;
-            font-size: 22px;
-            font-weight: 600;
-            color: #fff;
-            line-height: 1.4;
-            padding: 15px;
-            background: rgba(212,175,55,0.15);
-            border-left: 4px solid #d4af37;
-            border-right: 4px solid #d4af37;
-            border-radius: 8px;
-        }
-
-        .poster-meeting-info {
-            left: 30px;
-            top: 500px;
-            width: 440px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 12px;
-            padding: 15px;
-            color: white;
-            font-size: 13px;
-            line-height: 1.8;
-        }
-        .poster-meeting-info .date-line { font-size: 16px; font-weight: 600; color: #d4af37; margin-bottom: 8px; }
+        .poster-meeting-info { left: 30px; top: 520px; width: 440px; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 15px; color: white; font-size: 13px; line-height: 1.8; }
+        .poster-meeting-info .date-line { font-size: 16px; font-weight: 600; color: var(--primary-color); margin-bottom: 8px; }
         .poster-meeting-info .time-line { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
         .poster-meeting-info .time-item { background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 6px; font-size: 12px; }
-        .poster-meeting-info .zoom-line { color: #8ecae6; word-break: break-all; }
+        .poster-meeting-info .zoom-line { color: #8ecae6; word-break: break-all; font-size: 11px; }
 
-        .poster-logo {
-            left: 150px;
-            bottom: 20px;
-            width: 200px;
-            text-align: center;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            color: #d4af37;
-            letter-spacing: 3px;
-        }
-
-        /* Meeting Info Preview Box */
-        .meeting-preview-box {
-            background: #f8f9fa;
-            border: 2px solid #d4af37;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-        .meeting-preview-box h4 { font-size: 13px; color: #1a1a2e; margin-bottom: 10px; }
-        .meeting-preview-content { font-size: 12px; line-height: 1.8; color: #333; }
-        .meeting-preview-content .label { color: #888; }
-        .meeting-preview-content .value { font-weight: 600; color: #1a1a2e; }
+        .poster-logo { left: 150px; bottom: 15px; width: 200px; text-align: center; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; color: var(--primary-color); letter-spacing: 3px; }
 
         /* History Panel */
         .history-panel { background: #fff; border-radius: 16px; padding: 20px; margin-top: 15px; }
-        .history-panel h3 { font-size: 14px; color: #1a1a2e; margin-bottom: 15px; border-bottom: 2px solid #d4af37; padding-bottom: 8px; }
+        .history-panel h3 { font-size: 14px; color: var(--text-dark); margin-bottom: 15px; border-bottom: 2px solid var(--primary-color); padding-bottom: 8px; }
         .history-list { max-height: 300px; overflow-y: auto; }
-        .history-item { display: flex; gap: 12px; padding: 12px; border: 2px solid #e8e8e8; border-radius: 10px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
-        .history-item:hover { border-color: #d4af37; background: #fffbeb; }
+        .history-item { display: flex; gap: 12px; padding: 12px; border: 2px solid #e8e8e8; border-radius: 10px; margin-bottom: 10px; cursor: pointer; transition: all 0.3s; }
+        .history-item:hover { border-color: var(--primary-color); background: #fffbeb; }
         .history-thumb { width: 60px; height: 84px; border-radius: 6px; object-fit: cover; background: #eee; }
         .history-info { flex: 1; }
-        .history-info h4 { font-size: 13px; color: #1a1a2e; margin-bottom: 4px; }
+        .history-info h4 { font-size: 13px; color: var(--text-dark); margin-bottom: 4px; }
         .history-info p { font-size: 11px; color: #888; }
         .history-actions { display: flex; gap: 6px; margin-top: 8px; }
-        .history-actions button { padding: 4px 10px; font-size: 11px; border: none; border-radius: 6px; cursor: pointer; }
-        .history-actions .load-btn { background: #d4af37; color: #1a1a2e; }
+        .history-actions button { padding: 4px 10px; font-size: 11px; border: none; border-radius: 6px; cursor: pointer; transition: all 0.3s; }
+        .history-actions .load-btn { background: var(--primary-color); color: var(--text-dark); }
         .history-actions .delete-btn { background: #fee; color: #c00; }
 
         /* Toast */
@@ -253,9 +203,10 @@
 
         /* Export Buttons */
         .export-buttons { display: flex; gap: 10px; margin-top: 15px; }
-        .export-btn { flex: 1; padding: 15px; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 14px; }
-        .export-btn.download { background: linear-gradient(135deg, #d4af37, #f4d03f); color: #1a1a2e; }
-        .export-btn.save-history { background: #1a1a2e; color: #d4af37; }
+        .export-btn { flex: 1; padding: 15px; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 14px; transition: all 0.3s; }
+        .export-btn:hover { transform: translateY(-2px); }
+        .export-btn.download { background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); color: var(--text-dark); }
+        .export-btn.save-history { background: var(--text-dark); color: var(--primary-color); }
     </style>
 </head>
 <body>
@@ -311,7 +262,7 @@
 
                 <!-- Speaker Tab -->
                 <div class="tab-content active" id="tab-speaker">
-                    <div class="form-section-title">快速选择讲师</div>
+                    <div class="form-section-title">⚡ 快速选择讲师</div>
                     <div class="speaker-select">
                         <select id="speakerSelect">
                             <option value="">-- 选择已保存的讲师 --</option>
@@ -319,7 +270,7 @@
                         <button onclick="loadSelectedSpeaker()">加载</button>
                     </div>
 
-                    <div class="form-section-title">讲师信息</div>
+                    <div class="form-section-title">👤 讲师信息</div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>中文姓名</label>
@@ -344,19 +295,17 @@
                     </div>
                     <button class="action-btn removebg" onclick="removeBackground()">✨ AI去除背景</button>
 
-                    <div class="form-section-title">保存讲师到云端</div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>讲师ID（用于快速加载）</label>
-                            <input type="text" id="speakerSaveId" placeholder="如: zhangsan">
-                        </div>
+                    <div class="form-section-title">💾 保存讲师到云端</div>
+                    <div class="form-group">
+                        <label>讲师ID（用于快速加载）</label>
+                        <input type="text" id="speakerSaveId" placeholder="如: zhangsan">
                     </div>
                     <button class="action-btn secondary" onclick="saveSpeakerToCloud()">💾 保存讲师</button>
                 </div>
 
                 <!-- Topic Tab -->
                 <div class="tab-content" id="tab-topic">
-                    <div class="form-section-title">演讲主题</div>
+                    <div class="form-section-title">📝 演讲主题</div>
                     <div class="form-group">
                         <label>主题（中文）</label>
                         <textarea id="topicCn" rows="2" placeholder="如何成为优秀的领导者" oninput="updatePreview()"></textarea>
@@ -365,11 +314,18 @@
                         <label>主题（英文）- 可选</label>
                         <textarea id="topicEn" rows="2" placeholder="How to Become an Excellent Leader" oninput="updatePreview()"></textarea>
                     </div>
+
+                    <div class="form-section-title">✍️ 额外文字行</div>
+                    <p style="font-size:11px;color:#888;margin-bottom:10px;">可添加多行额外说明文字，如副标题、关键词等</p>
+                    <div class="text-lines-editor" id="textLinesEditor">
+                        <!-- Dynamic text lines will be added here -->
+                    </div>
+                    <button class="add-line-btn" onclick="addTextLine()">➕ 添加一行文字</button>
                 </div>
 
                 <!-- Meeting Tab -->
                 <div class="tab-content" id="tab-meeting">
-                    <div class="form-section-title">会议时间</div>
+                    <div class="form-section-title">📅 会议时间</div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>日期</label>
@@ -381,7 +337,7 @@
                         </div>
                     </div>
 
-                    <div class="form-section-title">Zoom 链接</div>
+                    <div class="form-section-title">🔗 Zoom 链接</div>
                     <div class="form-group">
                         <label>粘贴完整Zoom链接</label>
                         <input type="text" id="zoomLink" placeholder="https://zoom.us/j/875204..." oninput="updateMeetingPreview();updatePreview()">
@@ -402,12 +358,15 @@
 
                 <!-- Style Tab -->
                 <div class="tab-content" id="tab-style">
-                    <div class="form-section-title">选择背景</div>
-                    <div class="bg-grid" id="bgGrid"></div>
+                    <div class="form-section-title">🎨 背景选择</div>
+                    <div class="option-grid" id="bgGrid"></div>
 
-                    <div class="form-section-title">调整提示</div>
+                    <div class="form-section-title">🌈 配色方案</div>
+                    <div class="option-grid" id="colorGrid"></div>
+
+                    <div class="form-section-title">💡 操作提示</div>
                     <p style="font-size:12px;color:#666;line-height:1.6;">
-                        💡 在右侧海报预览中，您可以直接<strong>拖动</strong>各元素调整位置，<strong>拖动角落</strong>调整大小。
+                        在右侧海报预览中，您可以直接<strong>拖动</strong>各元素调整位置，<strong>拖动角落</strong>调整大小。
                     </p>
                 </div>
             </div>
@@ -434,6 +393,11 @@
                         <!-- Topic -->
                         <div class="draggable poster-topic" id="dragTopic" data-type="topic">
                             <span id="posterTopic">演讲主题</span>
+                            <div class="resize-handle"></div>
+                        </div>
+                        <!-- Extra Lines -->
+                        <div class="draggable poster-extra-lines" id="dragExtraLines" data-type="extraLines">
+                            <div id="posterExtraLines"></div>
                             <div class="resize-handle"></div>
                         </div>
                         <!-- Meeting Info -->
@@ -493,14 +457,8 @@
         let state = {
             photo: null,
             background: 0,
-            elements: {
-                photo: { x: 170, y: 80, w: 160, h: 160 },
-                name: { x: 50, y: 260, w: 400, h: 40 },
-                title: { x: 50, y: 310, w: 400, h: 30 },
-                topic: { x: 30, y: 370, w: 440, h: 100 },
-                meeting: { x: 30, y: 500, w: 440, h: 150 },
-                logo: { x: 150, y: 660, w: 200, h: 30 }
-            }
+            colorScheme: 0,
+            extraLines: []
         };
 
         // Backgrounds
@@ -515,9 +473,20 @@
             { name: '经典黑金', gradient: 'linear-gradient(180deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%)' }
         ];
 
+        // Color Schemes
+        const colorSchemes = [
+            { name: '金色经典', primary: '#d4af37', secondary: 'rgba(255,255,255,0.95)', topicBg: 'rgba(212,175,55,0.12)', border: '#d4af37' },
+            { name: '银白优雅', primary: '#ffffff', secondary: 'rgba(255,255,255,0.85)', topicBg: 'rgba(255,255,255,0.08)', border: 'rgba(255,255,255,0.6)' },
+            { name: '玫瑰金粉', primary: '#e8b4b8', secondary: 'rgba(255,255,255,0.9)', topicBg: 'rgba(232,180,184,0.12)', border: '#e8b4b8' },
+            { name: '翠绿清新', primary: '#50c878', secondary: 'rgba(255,255,255,0.95)', topicBg: 'rgba(80,200,120,0.12)', border: '#50c878' },
+            { name: '天蓝科技', primary: '#4fc3f7', secondary: 'rgba(255,255,255,0.95)', topicBg: 'rgba(79,195,247,0.12)', border: '#4fc3f7' },
+            { name: '紫罗兰韵', primary: '#b39ddb', secondary: 'rgba(179,157,219,0.9)', topicBg: 'rgba(179,157,219,0.12)', border: '#b39ddb' }
+        ];
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initBackgrounds();
+            initColorSchemes();
             initDraggable();
             setDefaultDate();
 
@@ -583,9 +552,7 @@
             }
         }
 
-        function logout() {
-            auth.signOut();
-        }
+        function logout() { auth.signOut(); }
 
         // Tab Switching
         function switchTab(tab) {
@@ -600,7 +567,7 @@
             const grid = document.getElementById('bgGrid');
             backgrounds.forEach((bg, i) => {
                 const div = document.createElement('div');
-                div.className = 'bg-option' + (i === 0 ? ' active' : '');
+                div.className = 'option-item' + (i === 0 ? ' active' : '');
                 div.style.background = bg.gradient;
                 div.innerHTML = `<span>${bg.name}</span>`;
                 div.onclick = () => selectBackground(i);
@@ -611,8 +578,40 @@
 
         function selectBackground(idx) {
             state.background = idx;
-            document.querySelectorAll('.bg-option').forEach((o, i) => o.classList.toggle('active', i === idx));
+            document.querySelectorAll('#bgGrid .option-item').forEach((o, i) => o.classList.toggle('active', i === idx));
             document.getElementById('posterPreview').style.background = backgrounds[idx].gradient;
+        }
+
+        // Color Schemes Init
+        function initColorSchemes() {
+            const grid = document.getElementById('colorGrid');
+            colorSchemes.forEach((cs, i) => {
+                const div = document.createElement('div');
+                div.className = 'option-item' + (i === 0 ? ' active' : '');
+                div.style.background = `linear-gradient(135deg, ${cs.primary} 0%, ${cs.border} 100%)`;
+                div.innerHTML = `<span>${cs.name}</span>`;
+                div.onclick = () => selectColorScheme(i);
+                grid.appendChild(div);
+            });
+            applyColorScheme(0);
+        }
+
+        function selectColorScheme(idx) {
+            state.colorScheme = idx;
+            document.querySelectorAll('#colorGrid .option-item').forEach((o, i) => o.classList.toggle('active', i === idx));
+            applyColorScheme(idx);
+        }
+
+        function applyColorScheme(idx) {
+            const cs = colorSchemes[idx];
+            document.getElementById('dragName').querySelector('span').style.color = cs.primary;
+            document.getElementById('dragTitle').querySelector('span').style.color = cs.secondary;
+            document.getElementById('dragTopic').style.borderLeftColor = cs.border;
+            document.getElementById('dragTopic').style.borderRightColor = cs.border;
+            document.getElementById('dragTopic').style.background = cs.topicBg;
+            document.getElementById('posterDate').style.color = cs.primary;
+            document.getElementById('dragLogo').style.color = cs.primary;
+            document.querySelector('.poster-photo').style.borderColor = cs.border;
         }
 
         // Photo Upload
@@ -712,6 +711,48 @@
             await db.collection('users').doc(currentUser.uid).collection('speakers').doc(id).set(data);
             loadSpeakers();
             showToast('讲师已保存！', 'success');
+        }
+
+        // Text Lines Functions
+        function addTextLine() {
+            const editor = document.getElementById('textLinesEditor');
+            const idx = editor.children.length + 1;
+            const div = document.createElement('div');
+            div.className = 'text-line-item';
+            div.innerHTML = `
+                <input type="text" placeholder="输入第${idx}行文字..." oninput="updateExtraLines()">
+                <button class="remove-btn" onclick="removeTextLine(this)">✕</button>
+            `;
+            editor.appendChild(div);
+            updateExtraLines();
+        }
+
+        function removeTextLine(btn) {
+            btn.parentElement.remove();
+            updateExtraLines();
+        }
+
+        function updateExtraLines() {
+            const inputs = document.querySelectorAll('#textLinesEditor input');
+            state.extraLines = [];
+            inputs.forEach(input => {
+                if (input.value.trim()) {
+                    state.extraLines.push(input.value.trim());
+                }
+            });
+
+            const container = document.getElementById('posterExtraLines');
+            container.innerHTML = '';
+            state.extraLines.forEach(line => {
+                const div = document.createElement('div');
+                div.className = 'extra-line';
+                div.textContent = line;
+                container.appendChild(div);
+            });
+
+            // Show/hide extra lines container
+            const dragEl = document.getElementById('dragExtraLines');
+            dragEl.style.display = state.extraLines.length > 0 ? 'block' : 'none';
         }
 
         // Meeting Preview Update
@@ -904,8 +945,16 @@
             try {
                 // Generate thumbnail
                 const poster = document.getElementById('posterPreview');
+
+                // Hide UI elements for screenshot
+                document.querySelectorAll('.resize-handle').forEach(h => h.style.display = 'none');
+                document.querySelectorAll('.draggable').forEach(d => d.style.outline = 'none');
+
                 const canvas = await html2canvas(poster, { scale: 0.3, useCORS: true });
                 const thumbnail = canvas.toDataURL('image/jpeg', 0.6);
+
+                // Restore UI
+                document.querySelectorAll('.resize-handle').forEach(h => h.style.display = '');
 
                 const data = {
                     speakerName: document.getElementById('speakerName').value || document.getElementById('speakerNameEn').value,
@@ -913,6 +962,8 @@
                     topic: document.getElementById('topicCn').value || document.getElementById('topicEn').value,
                     photo: state.photo,
                     background: state.background,
+                    colorScheme: state.colorScheme,
+                    extraLines: state.extraLines,
                     meetingDate: document.getElementById('meetingDate').value,
                     meetingTime: document.getElementById('meetingTime').value,
                     zoomLink: document.getElementById('zoomLink').value,
@@ -952,6 +1003,27 @@
 
                 if (d.background !== undefined) {
                     selectBackground(d.background);
+                }
+
+                if (d.colorScheme !== undefined) {
+                    selectColorScheme(d.colorScheme);
+                }
+
+                // Restore extra lines
+                if (d.extraLines && d.extraLines.length > 0) {
+                    const editor = document.getElementById('textLinesEditor');
+                    editor.innerHTML = '';
+                    d.extraLines.forEach((line, idx) => {
+                        const div = document.createElement('div');
+                        div.className = 'text-line-item';
+                        div.innerHTML = `
+                            <input type="text" value="${line}" oninput="updateExtraLines()">
+                            <button class="remove-btn" onclick="removeTextLine(this)">✕</button>
+                        `;
+                        editor.appendChild(div);
+                    });
+                    state.extraLines = d.extraLines;
+                    updateExtraLines();
                 }
 
                 updateMeetingPreview();
@@ -1012,6 +1084,11 @@
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
+
+        // Initialize extra lines container as hidden
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('dragExtraLines').style.display = 'none';
+        });
     </script>
 </body>
 </html>
